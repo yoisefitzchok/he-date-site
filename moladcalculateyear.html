@@ -85,7 +85,7 @@ function getDayOfRoshHshan(year) {
 
 //כסדרה=0
 //חסרה=-1
-//מלאה=1
+//שלמה=1
 function getyeartype(year){
     day=getDayOfRoshHshan(year);
     if (IsLeapYear(year)) day+=384;
@@ -117,10 +117,10 @@ function showTable(year){
     var days = new Array("", "ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת");
 
 	var leap = new Array("פשוטה", "מעוברת");
-	var type = new Array("חסרה", "כסדרה", "מלאה");
+	var type = new Array("חסרה", "כסדרה", "שלמה");
 	var DayOfRoshHshan = getDayOfRoshHshan(year);
 	t+="<ul>";
-	t+="<li>"+type[1 + getyeartype(year)]+", " + leap[IsLeapYear(year) * 1] + "</li>";
+	t+="<li>"+type[1 + getyeartype(year)]+", " + leap[IsLeapYear(year) * 1] +  " ("+String.fromCharCode(1487+mod7(DayOfRoshHshan))+type[1 + getyeartype(year)].substr(0,1)+String.fromCharCode(1487+mod7(DayOfRoshHshan+191+getyeartype(year)+IsLeapYear(year)*30)) +")</li>";
 	t+="<li>שנה "+(year%19==0?19:year%19)+" במחזור</li>";
 	if (Delays!=""){
 		t+="<li>"+Delays+"</li>";
@@ -228,7 +228,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 <div id="myTable"></div>
 <br/>
 
-נבנה ע"י דניאל לבנון. להערות והארות נא לשלוח דוא"ל daniellevanon@gmail.com
+נבנה ע"י דניאל ארז. להערות והארות נא לשלוח דוא"ל daniellevanon@gmail.com
 
 
 </body>

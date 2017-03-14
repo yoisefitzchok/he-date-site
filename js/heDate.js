@@ -1,6 +1,6 @@
 ﻿//     heDate.js 1.3.0
 //     http://he-date.info/site.html
-//     (c) 2004-2014 (ה'תשס"ד -ה'תשע"ה) - daniel levanon (daniellevanon@gmail.com)
+//     (c) 2004-2017 (ה'תשס"ד -ה'תשע"ז) - Daniel Erez (daniellevanon@gmail.com)
 //     HeDate may be freely distributed under the MIT license.
 function HeDate(p1,p2,p3){
     this.year=0;
@@ -125,7 +125,7 @@ HeDate.getDayOfRoshHshan=function(year){
 
 //כסדרה=0
 //חסרה=-1
-//מלאה=1
+//שלמה=1
 HeDate.getyeartype=function(year){
     day=HeDate.getDayOfRoshHshan(year) + 354 + 30*HeDate.IsLeapYear(year);
     return HeDate.getDayOfRoshHshan(year+1)-day;
