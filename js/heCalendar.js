@@ -116,9 +116,9 @@ function showEvent(date,tableCell){
             else if (date.getDate()==20) tableCell.find(".event").html("ה' חוה\"מ");
             else if (date.getDate()==21) {tableCell.find(".event").html("שביעי של פסח"); tableCell.addClass("sabbath");}
             if (date.getYear()>=5711){
-                if (date.getDate()==26 && date.getDay()==5) tableCell.find(".event").html("יום הזיכרון לשאוה ולגבורה (מוקדם)");
-                else if (date.getDate()==28 && date.getDay()==2 && date.getYear()>=5757) tableCell.find(".event").html("יום הזיכרון לשאוה ולגבורה (נדחה)");
-                else if (date.getDate()==27 && date.getDay()!=6 && (date.getDay()!=1 | date.getYear()<5757)) tableCell.find(".event").html("יום הזיכרון לשאוה ולגבורה");
+                if (date.getDate()==26 && date.getDay()==5) tableCell.find(".event").html("יום הזיכרון לשואה ולגבורה (מוקדם)");
+                else if (date.getDate()==28 && date.getDay()==2 && date.getYear()>=5757) tableCell.find(".event").html("יום הזיכרון לשואה ולגבורה (נדחה)");
+                else if (date.getDate()==27 && date.getDay()!=6 && (date.getDay()!=1 | date.getYear()<5757)) tableCell.find(".event").html("יום הזיכרון לשואה ולגבורה");
             }
             break;                                    
         case 9://אייר
