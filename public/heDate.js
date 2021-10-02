@@ -1,6 +1,6 @@
 ﻿//     heDate.js 1.3.0
 //     http://he-date.info/site.html
-//     (c) 2004-2014 (ה'תשס"ד -ה'תשע"ה) - Daniel Erez (daniellevanon@gmail.com)
+//     (c) 2004-2014 (ה'תשס"ד -ה'תשע"ה) - Daniel Erez (erezdaniel7@gmail.com)
 //     HeDate may be freely distributed under the MIT license.
 function HeDate(p1,p2,p3){
     this.year=0;
