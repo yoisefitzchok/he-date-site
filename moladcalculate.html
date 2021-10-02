@@ -108,15 +108,16 @@ function printLine(year) {
     var ans = "";
     time = getTimeOfMoladRoshHshann(year);
     ans += "<tr><td><a href='moladcalculateyear.html#"+year+"'>" + HeDate.gimatria(year) +"</a>";
+    var leap = new Array("פשוטה", "מעוברת");
+    ans += "</td><td>" + leap[IsLeapYear(year) * 1] + " ("+(year%19==0?19:year%19)+")";
     var days = new Array("", "ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת");
     ans += "</td><td>" + days[mod7(time.days)] + " : " + time.hours + " : " + time.parts;
     var DayOfRoshHshan = getDayOfRoshHshan(year);
     ans += "</td><td>" + Delays;
     ans += "</td><td>" + days[mod7(DayOfRoshHshan)];
+    ans += "</td><td>" + (354+getyeartype(year)+IsLeapYear(year)*30);
     var type = new Array("חסרה", "כסדרה", "שלמה");
     ans += "</td><td>" + type[1 + getyeartype(year)] + " ("+String.fromCharCode(1487+mod7(DayOfRoshHshan))+type[1 + getyeartype(year)].substr(0,1)+String.fromCharCode(1487+mod7(DayOfRoshHshan+191+getyeartype(year)+IsLeapYear(year)*30)) +")";
-    var leap = new Array("פשוטה", "מעוברת");
-    ans += "</td><td>" + leap[IsLeapYear(year) * 1] + " ("+(year%19==0?19:year%19)+")";
     var gDate = getGregorianDateDatOfRoshHashanah(year);
     ans += "</td><td>" + gDate.getDate() + "/" + (gDate.getMonth() + 1) + "/" + gDate.getFullYear();
     ans += "</td></tr>";
@@ -126,7 +127,7 @@ function printLine(year) {
 function showTable(from,to){
 	console.log("showTable");
 	var t="<table border=1>";
-    t += "<tr><td>שנה</td><td>זמן מולד<br/>(יום: שעות: חלקים)</td><td>דחיות</td><td>יום בשבוע ראש השנה</td><td>סוג שנה</td><td>מעוברת?</td><td>תאריך לועזי של ראש השנה</td></tr>";
+    t += "<tr><td>שנה</td><td>מעוברת?</td><td>זמן מולד<br/>(יום: שעות: חלקים)</td><td>דחיות</td><td>יום בשבוע ראש השנה</td><td>מספר ימי השנה</td><td>סוג שנה</td><td>תאריך לועזי של ראש השנה</td></tr>";
 
     for (i=from; i<=to; i++){
         t += printLine(i)
