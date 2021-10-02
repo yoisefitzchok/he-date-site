@@ -62,22 +62,22 @@ function mod7(day){
     return ans;
 }
 
-var Delays;
+var Delays = [];
 function getDayOfRoshHshan(year) {
-    Delays="";
+    Delays[year]="";
     myTime=getTimeOfMoladRoshHshann(year);
     if (myTime.hours >= 18) //מולד זקן בל תדרוש
-        { myTime.days++; Delays = "מולד זקן בל תדרוש"; }
+        { myTime.days++; Delays[year] = "מולד זקן בל תדרוש"; }
     else if (mod7(myTime.days) == 3 && ((myTime.hours == 9 && myTime.parts >= 204) | myTime.hours > 9) && !IsLeapYear(year)) // ג"ט ר"ד בשנה פשוטה גרוש
-        { myTime.days++; Delays = "ג\"ט ר\"ד בשנה פשוטה גרוש"; }
+        { myTime.days++; Delays[year] = "ג\"ט ר\"ד בשנה פשוטה גרוש"; }
     else if (mod7(myTime.days) == 2 && ((myTime.hours == 15 && myTime.parts >= 589) | myTime.hours > 15) && IsLeapYear(year - 1)) // בט\"ו תקפ\"ט אחר עיבור עקור מלשרוש
-        { myTime.days++; Delays = "בט\"ו תקפ\"ט אחר עיבור עקור מלשרוש"; }
+        { myTime.days++; Delays[year] = "בט\"ו תקפ\"ט אחר עיבור עקור מלשרוש"; }
 
         if (mod7(myTime.days) == 1 | mod7(myTime.days) == 4 | mod7(myTime.days) == 6) //לא אד"ו ראש
         {
             myTime.days++;
-            if (Delays != "") Delays += "<br/>";
-            Delays += "לא אד\"ו ראש";
+            if (Delays[year] != "") Delays[year] += "<br/>";
+            Delays[year] += "לא אד\"ו ראש";
 
         }
     return myTime.days;
@@ -122,8 +122,8 @@ function showTable(year){
 	t+="<ul>";
 	t+="<li>"+type[1 + getyeartype(year)]+", " + leap[IsLeapYear(year) * 1] +  " ("+String.fromCharCode(1487+mod7(DayOfRoshHshan))+type[1 + getyeartype(year)].substr(0,1)+String.fromCharCode(1487+mod7(DayOfRoshHshan+191+getyeartype(year)+IsLeapYear(year)*30)) +")</li>";
 	t+="<li>שנה "+(year%19==0?19:year%19)+" במחזור</li>";
-	if (Delays!=""){
-		t+="<li>"+Delays+"</li>";
+	if (Delays[year]!=""){
+		t+="<li>"+Delays[year]+"</li>";
 	}
 	t+="<li> אורך השנה: "+(354+ getyeartype(year) + 30*IsLeapYear(year)) + " ימים</li>";
 	t+="</ul>";
