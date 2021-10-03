@@ -71,7 +71,7 @@ function getDayOfRoshHshan(year) {
         if (mod7(myTime.days) == 1 | mod7(myTime.days) == 4 | mod7(myTime.days) == 6) //לא אד"ו ראש
         {
             myTime.days++;
-            if (Delays != "") Delays += "<br/>";
+            if (Delays != "") Delays += "\n";
             Delays += "לא אד\"ו ראש";
 
         }
@@ -104,36 +104,81 @@ function getGregorianDateDatOfRoshHashanah(year){
     return myDate;
 }
 
-function printLine(year) {
-    var ans = "";
+function getLine(year) {
+    let line = [];
     time = getTimeOfMoladRoshHshann(year);
-    ans += "<tr><td><a href='moladcalculateyear.html#"+year+"'>" + HeDate.gimatria(year) +"</a>";
+    line.push(`<a href="moladcalculateyear.html#${year}">${HeDate.gimatria(year)}`);
     var leap = new Array("פשוטה", "מעוברת");
-    ans += "</td><td>" + leap[IsLeapYear(year) * 1] + " ("+(year%19==0?19:year%19)+")";
+    line.push(leap[IsLeapYear(year) * 1] + " ("+(year%19==0?19:year%19)+")");
     var days = new Array("", "ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת");
-    ans += "</td><td>" + days[mod7(time.days)] + " : " + time.hours + " : " + time.parts;
+    line.push(`${days[mod7(time.days)]} : ${time.hours} : ${time.parts}`);
     var DayOfRoshHshan = getDayOfRoshHshan(year);
-    ans += "</td><td>" + Delays;
-    ans += "</td><td>" + days[mod7(DayOfRoshHshan)];
-    ans += "</td><td>" + (354+getyeartype(year)+IsLeapYear(year)*30);
+    line.push(Delays);
+    line.push(days[mod7(DayOfRoshHshan)]);
+    line.push(354+getyeartype(year)+IsLeapYear(year)*30);
     var type = new Array("חסרה", "כסדרה", "שלמה");
-    ans += "</td><td>" + type[1 + getyeartype(year)] + " ("+String.fromCharCode(1487+mod7(DayOfRoshHshan))+type[1 + getyeartype(year)].substr(0,1)+String.fromCharCode(1487+mod7(DayOfRoshHshan+191+getyeartype(year)+IsLeapYear(year)*30)) +")";
+    line.push(type[1 + getyeartype(year)] + " ("+String.fromCharCode(1487+mod7(DayOfRoshHshan))+type[1 + getyeartype(year)].substr(0,1)+String.fromCharCode(1487+mod7(DayOfRoshHshan+191+getyeartype(year)+IsLeapYear(year)*30)) +")");
     var gDate = getGregorianDateDatOfRoshHashanah(year);
-    ans += "</td><td>" + gDate.getDate() + "/" + (gDate.getMonth() + 1) + "/" + gDate.getFullYear();
-    ans += "</td></tr>";
-    return ans;
- }
+    line.push(gDate.getDate() + "/" + (gDate.getMonth() + 1) + "/" + gDate.getFullYear());
+    return line;
+}
+
+function buildTable(from, to) {
+    let table = [];
+    table.push([
+        'שנה',
+        'מעוברת?',
+        'זמן מולד\n(יום: שעות: חלקים)',
+        'דחיות',
+        'יום בשבוע ראש השנה',
+        'מספר ימי השנה',
+        'סוג שנה',
+        'תאריך לועזי של ראש השנה'
+    ]);
+    for (i=from; i<=to; i++){
+        table.push(getLine(i));
+    }
+    return table;
+}
 
 function showTable(from,to){
-	console.log("showTable");
-	var t="<table border=1>";
-    t += "<tr><td>שנה</td><td>מעוברת?</td><td>זמן מולד<br/>(יום: שעות: חלקים)</td><td>דחיות</td><td>יום בשבוע ראש השנה</td><td>מספר ימי השנה</td><td>סוג שנה</td><td>תאריך לועזי של ראש השנה</td></tr>";
-
-    for (i=from; i<=to; i++){
-        t += printLine(i)
-    }
+    let table = buildTable(from,to);
+	let t = '<table border="1">';
+    table.forEach((row,i) => {
+        t+='<tr>';
+        row.forEach(col =>{
+            col=col+"";
+            if(i===0){
+                t+='<th>'+col.replace(/\n/g, "<br />")+'</th>';
+            }
+            else{
+                t+='<td>'+col.replace(/\n/g, "<br />")+'</td>';
+            }
+        });
+        t+='</tr>';
+    });
     t+="</table>";
     document.getElementById("myTable").innerHTML=t;
+}
+
+function exportCsv(from,to){
+    let table = buildTable(from,to);
+    let csvContent = 'data:text/csv;charset=utf-8,\ufeff';
+    table.forEach((row) => {
+        row.forEach(col =>{
+            col=(col+"").replace(/(<([^>]+)>)/ig, "");
+            col=col.replace(/\"/g, '""');
+            csvContent+='"'+col+'",';
+        });
+        csvContent+='\n';
+    });
+    
+    var encodedUri = encodeURI(csvContent);
+    var link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "moladcalculate.csv");
+    document.body.appendChild(link); // Required for FF
+    link.click(); // This will download the data file named "moladcalculate.csv".
 }
 
 function yearChange(o) {
@@ -175,10 +220,15 @@ $(document).ready(function () {
     changeHash();	
 	$( "#yearSelect" ).submit(function( event ) {
 		event.preventDefault();
-		var from = HeDate.regimatria($("#from").val());
-		var to = HeDate.regimatria($("#to").val());
+		let from = HeDate.regimatria($("#from").val());
+		let to = HeDate.regimatria($("#to").val());
 		window.location.hash = from+","+to;
 	});
+    $( "#export-csv" ).click(()=>{
+        let from = HeDate.regimatria($("#from").val());
+		let to = HeDate.regimatria($("#to").val());
+        exportCsv(from,to);
+    });
 });
 
 $(window).bind( 'hashchange', changeHash);
@@ -224,6 +274,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 	שנת סיום:<input type="text" id="to" onchange="yearChange(this);"/>
 	<br />
 	<input type="submit" value="חשב מחדש" />
+	<input id="export-csv" type="button" value="יצוא לאקסל" />
 </form>
 
 <div id="myTable"></div>
