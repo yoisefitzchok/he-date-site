@@ -4,3 +4,11 @@ body{font-family:arial,sans-serif}
 #topbar .menu a{margin-left:.73em; color:Black;}
 #topbar .menu span{margin-left:.73em; color:Black; font-weight:bold;}
 #topbar .today{float:left;}
+
+.info{
+    color: #059;
+    background-color: #BEF;
+    width: 534px;
+    line-height: 40px;
+    padding: 10px;
+}

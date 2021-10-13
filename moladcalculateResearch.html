@@ -1,0 +1,280 @@
+﻿<html dir="rtl">
+
+<head>
+<title>לוח השנה העברי - מחשבון מולדות הירח - מחקר</title>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<script type="text/javascript" src="js/heDate.min.js"></script>
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript">var thisPageId="moladCalculate";</script>
+<link href="style/style.css" rel="stylesheet" type="text/css"/> 
+<script type="text/javascript">
+var today = new HeDate(new Date());
+function Time(days,hours,parts){
+    this.days=days;
+    this.hours=hours;
+    this.parts=parts;
+}
+
+function intDiv(a, b) {
+    return (a - a % b) / b;
+}
+
+
+function getTimeOfMoladRoshHshann(year) {
+    var numOfMonth=(year-1)*12+intDiv(year-1,19)*7; //(y-1)*12+((y-1) div 19)*7
+    if ((year-1)%19>=17) numOfMonth+=6;
+    else if((year-1)%19>=14) numOfMonth+=5;
+    else if((year-1)%19>=11) numOfMonth+=4;
+    else if((year-1)%19>=8) numOfMonth+=3;
+    else if((year-1)%19>=6) numOfMonth+=2;
+    else if((year-1)%19>=3) numOfMonth++;
+    
+    myTime=new Time(numOfMonth*29,numOfMonth*12,numOfMonth*793);
+    //add the first molad.
+    myTime.days+=2;
+    myTime.hours+=5;
+    myTime.parts+=204;
+    
+    myTime.hours+=intDiv(myTime.parts,1080);
+    myTime.parts=myTime.parts%1080;
+    myTime.days+=intDiv(myTime.hours,24);
+    myTime.hours=myTime.hours%24;
+
+    return myTime;
+}
+
+IsLeapYear = function (year){
+	year=year%19;
+	if (year==3 || year==6 || year==8 || year==11 || year==14 || year==17 || year==0)
+		return true;
+	else
+		return false;
+}
+
+function mod7(day){
+    var ans=day%7;
+    if (ans==0) ans=7;
+    return ans;
+}
+
+var Delays;
+function getDayOfRoshHshan(year, delay1 = true, delay2 = true, delay3 = true, delay4 = true) {
+    Delays="";
+    myTime=getTimeOfMoladRoshHshann(year);
+    if (delay1 && myTime.hours >= 18) //מולד זקן בל תדרוש
+        { myTime.days++; Delays = "מולד זקן בל תדרוש"; }
+    else if (delay2 && mod7(myTime.days) == 3 && ((myTime.hours == 9 && myTime.parts >= 204) | myTime.hours > 9) && !IsLeapYear(year)) // ג"ט ר"ד בשנה פשוטה גרוש
+        { myTime.days++; Delays = "ג\"ט ר\"ד בשנה פשוטה גרוש"; }
+    else if (delay3 && mod7(myTime.days) == 2 && ((myTime.hours == 15 && myTime.parts >= 589) | myTime.hours > 15) && IsLeapYear(year - 1)) // בט\"ו תקפ\"ט אחר עיבור עקור מלשרוש
+        { myTime.days++; Delays = "בט\"ו תקפ\"ט אחר עיבור עקור מלשרוש"; }
+
+    if (delay4 && mod7(myTime.days) == 1 | mod7(myTime.days) == 4 | mod7(myTime.days) == 6) //לא אד"ו ראש
+    {
+        myTime.days++;
+        if (Delays != "") Delays += "\n";
+        Delays += "לא אד\"ו ראש";
+
+    }
+    return myTime.days;
+}
+
+//כסדרה=0
+//חסרה=-1
+//שלמה=1
+function getyeartype(year, delay1 = true, delay2 = true, delay3 = true, delay4 = true){
+    day=getDayOfRoshHshan(year, delay1, delay2, delay3, delay4);
+    if (IsLeapYear(year)) day+=384;
+    else day+=354;
+    return getDayOfRoshHshan(year+1, delay1, delay2, delay3, delay4)-day;
+}
+
+function getLine(year) {
+    let line = [];
+    time = getTimeOfMoladRoshHshann(year);
+    line.push(HeDate.gimatria(year));
+    var leap = new Array("פשוטה", "מעוברת");
+    line.push(leap[IsLeapYear(year) * 1] + " ("+(year%19==0?19:year%19)+")");
+    var days = new Array("", "ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת");
+    line.push(`${days[mod7(time.days)]} : ${time.hours} : ${time.parts}`);
+    var DayOfRoshHshan = getDayOfRoshHshan(year);
+    line.push(Delays);
+    var yeartype = getyeartype(year);
+    var type = new Array("חסרה", "כסדרה", "שלמה");
+    line.push(String.fromCharCode(1487+mod7(DayOfRoshHshan))+type[1 + yeartype].substr(0,1)+String.fromCharCode(1487+mod7(DayOfRoshHshan+191+yeartype+IsLeapYear(year)*30)));
+
+    DayOfRoshHshan = getDayOfRoshHshan(year,true,true,true,false);
+    yeartype = getyeartype(year,true,true,true,false);
+    line.push(String.fromCharCode(1487+mod7(DayOfRoshHshan))+type[1 + yeartype].substr(0,1)+String.fromCharCode(1487+mod7(DayOfRoshHshan+191+yeartype+IsLeapYear(year)*30)));
+
+    DayOfRoshHshan = getDayOfRoshHshan(year,false,true,true,false);
+    yeartype = getyeartype(year,false,true,true,false);
+    line.push(String.fromCharCode(1487+mod7(DayOfRoshHshan))+type[1 + yeartype].substr(0,1)+String.fromCharCode(1487+mod7(DayOfRoshHshan+191+yeartype+IsLeapYear(year)*30)));
+
+    return line;
+}
+
+function buildTable(from, to) {
+    let table = [];
+    table.push([
+        'שנה',
+        'מעוברת?',
+        'זמן מולד תשרי\n(יום: שעות: חלקים)',
+        'דחיות',
+        'קביעות לפי לוח השנה',
+        `קביעות בלי דחיית יום א' ועם דחיית מולד זקן`,
+        `קביעות בלי דחיית יום א' ובלי דחיית מולד זקן`,
+    ]);
+    for (i=from; i<=to; i++){
+        table.push(getLine(i));
+    }
+    return table;
+}
+
+function showTable(from,to){
+    let table = buildTable(from,to);
+	let t = '<table border="1">';
+    table.forEach((row,i) => {
+        t+='<tr>';
+        row.forEach(col =>{
+            col=col+"";
+            if(i===0){
+                t+='<th>'+col.replace(/\n/g, "<br />")+'</th>';
+            }
+            else{
+                t+='<td>'+col.replace(/\n/g, "<br />")+'</td>';
+            }
+        });
+        t+='</tr>';
+    });
+    t+="</table>";
+    document.getElementById("myTable").innerHTML=t;
+}
+
+function exportCsv(from,to){
+    let table = buildTable(from,to);
+    let csvContent = 'data:text/csv;charset=utf-8,\ufeff';
+    table.forEach((row) => {
+        row.forEach(col =>{
+            col=(col+"").replace(/(<([^>]+)>)/ig, "");
+            col=col.replace(/\"/g, '""');
+            csvContent+='"'+col+'",';
+        });
+        csvContent+='\n';
+    });
+    
+    var encodedUri = encodeURI(csvContent);
+    var link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "moladcalculate.csv");
+    document.body.appendChild(link); // Required for FF
+    link.click(); // This will download the data file named "moladcalculate.csv".
+}
+
+function yearChange(o) {
+    var str = o.value;
+    var num = parseInt(str);
+    if (isNaN(num)) num = HeDate.regimatria(str);
+    if (num == 0) num = 1;
+    str = HeDate.gimatria(num);
+    o.value=str;
+}
+
+function changeHash(){
+	var from=0,to=0;
+	tmp=window.location.hash.substr(1).split(",");
+	if (tmp.length==2){
+		from = parseInt(tmp[0]);
+		to = parseInt(tmp[1]);
+	}
+	if (to==0 && from==0){
+		from=today.getYear();
+		to=from+19;
+	}
+	else if(from==0){
+		from=1;
+	}
+	else if(to<from){
+		to=from;
+	}
+	else 
+		showTable(from,to);
+	window.location.hash = from+","+to;
+	$("#from").val(HeDate.gimatria(from));
+	$("#to").val(HeDate.gimatria(to));
+}
+
+
+
+$(document).ready(function () {
+    changeHash();	
+	$( "#yearSelect" ).submit(function( event ) {
+		event.preventDefault();
+		let from = HeDate.regimatria($("#from").val());
+		let to = HeDate.regimatria($("#to").val());
+		window.location.hash = from+","+to;
+	});
+    $( "#export-csv" ).click(()=>{
+        let from = HeDate.regimatria($("#from").val());
+		let to = HeDate.regimatria($("#to").val());
+        exportCsv(from,to);
+    });
+});
+
+$(window).bind( 'hashchange', changeHash);
+
+
+
+
+
+</script>
+
+</head>
+
+<body>
+    <div id="topbar">
+		<div class="menu"></div>
+		<div class="today"></div>
+	</div>
+
+<h1>מחשבון מולדות הירח - מחקר</h1>
+<p class="info"> עמוד זה הינו למטרות מחקר, למטרות לימוד על עיבור השנה מומלץ לגלוש ל<a href="moladcalculate.html">כאן</a></p>
+
+<div style="float:left">
+<script type="text/javascript">
+    google_ad_client = "pub-2431148680519977";
+    /* צד שמאל לוח השנה העברי */
+    google_ad_slot = "8651663694";
+    google_ad_width = 120;
+    google_ad_height = 600;
+
+</script>
+<script type="text/javascript"
+src="https://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</div>
+
+
+
+
+מחשב עבור כל שנה את זמן מולד הירח של ראש השנה, את הדחיות ואת סוג השנה.
+<br />
+<br />
+<form id="yearSelect">
+	שנת התחלה:<input type="text" id="from" onchange="yearChange(this);"/>
+	שנת סיום:<input type="text" id="to" onchange="yearChange(this);"/>
+	<br />
+	<input type="submit" value="חשב מחדש" />
+	<input id="export-csv" type="button" value="יצוא לאקסל" />
+</form>
+
+<div id="myTable"></div>
+<br/>
+
+נבנה ע"י דניאל ארז. להערות והארות נא לשלוח דוא"ל erezdaniel7@gmail.com
+
+
+</body>
+<script type="text/javascript" src="js/script.js"></script>
+
+
+</html>
