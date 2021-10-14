@@ -58,7 +58,7 @@ function mod7(day){
 }
 
 var Delays;
-function getDayOfRoshHshan(year, delay1 = true, delay2 = true, delay3 = true, delay4 = true) {
+function getDayOfRoshHshan(year, delay1 = true, delay2 = true, delay3 = true, delay4 = [1,0,0,1,0,1,0]) {
     Delays="";
     myTime=getTimeOfMoladRoshHshann(year);
     if (delay1 && myTime.hours >= 18) //מולד זקן בל תדרוש
@@ -68,7 +68,8 @@ function getDayOfRoshHshan(year, delay1 = true, delay2 = true, delay3 = true, de
     else if (delay3 && mod7(myTime.days) == 2 && ((myTime.hours == 15 && myTime.parts >= 589) | myTime.hours > 15) && IsLeapYear(year - 1)) // בט\"ו תקפ\"ט אחר עיבור עקור מלשרוש
         { myTime.days++; Delays = "בט\"ו תקפ\"ט אחר עיבור עקור מלשרוש"; }
 
-    if (delay4 && mod7(myTime.days) == 1 | mod7(myTime.days) == 4 | mod7(myTime.days) == 6) //לא אד"ו ראש
+    delay4 = [null, ...delay4];
+    if (delay4[mod7(myTime.days)]) //לא אד"ו ראש
     {
         myTime.days++;
         if (Delays != "") Delays += "\n";
@@ -81,7 +82,7 @@ function getDayOfRoshHshan(year, delay1 = true, delay2 = true, delay3 = true, de
 //כסדרה=0
 //חסרה=-1
 //שלמה=1
-function getyeartype(year, delay1 = true, delay2 = true, delay3 = true, delay4 = true){
+function getyeartype(year, delay1 = true, delay2 = true, delay3 = true, delay4 = [1,0,0,1,0,1,0]){
     day=getDayOfRoshHshan(year, delay1, delay2, delay3, delay4);
     if (IsLeapYear(year)) day+=384;
     else day+=354;
@@ -96,19 +97,27 @@ function getLine(year) {
     line.push(leap[IsLeapYear(year) * 1] + " ("+(year%19==0?19:year%19)+")");
     var days = new Array("", "ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת");
     line.push(`${days[mod7(time.days)]} : ${time.hours} : ${time.parts}`);
+    getYearTypeText = (yeartype) => {
+        let type = new Array("חסרה", "כסדרה", "שלמה");
+        let ans = type[1 + yeartype];
+        return ans || '#'
+    }
     var DayOfRoshHshan = getDayOfRoshHshan(year);
     line.push(Delays);
     var yeartype = getyeartype(year);
-    var type = new Array("חסרה", "כסדרה", "שלמה");
-    line.push(String.fromCharCode(1487+mod7(DayOfRoshHshan))+type[1 + yeartype].substr(0,1)+String.fromCharCode(1487+mod7(DayOfRoshHshan+191+yeartype+IsLeapYear(year)*30)));
+    yearLength = 354+yeartype+IsLeapYear(year)*30;
+    line.push(String.fromCharCode(1487+mod7(DayOfRoshHshan))+getYearTypeText(yeartype).substr(0,1)+String.fromCharCode(1487+mod7(DayOfRoshHshan-163+yearLength))+` (${yearLength})`);
 
-    DayOfRoshHshan = getDayOfRoshHshan(year,true,true,true,false);
-    yeartype = getyeartype(year,true,true,true,false);
-    line.push(String.fromCharCode(1487+mod7(DayOfRoshHshan))+type[1 + yeartype].substr(0,1)+String.fromCharCode(1487+mod7(DayOfRoshHshan+191+yeartype+IsLeapYear(year)*30)));
+    DayOfRoshHshan = getDayOfRoshHshan(year,true,true,true,[0,0,0,1,0,1,0]);
+    yeartype = getyeartype(year,true,true,true,[0,0,0,1,0,1,0]);
+    yearLength = 354+yeartype+IsLeapYear(year)*30
+    line.push(String.fromCharCode(1487+mod7(DayOfRoshHshan))+getYearTypeText(yeartype).substr(0,1)+String.fromCharCode(1487+mod7(DayOfRoshHshan-163+yearLength))+` (${yearLength})`);
 
-    DayOfRoshHshan = getDayOfRoshHshan(year,false,true,true,false);
-    yeartype = getyeartype(year,false,true,true,false);
-    line.push(String.fromCharCode(1487+mod7(DayOfRoshHshan))+type[1 + yeartype].substr(0,1)+String.fromCharCode(1487+mod7(DayOfRoshHshan+191+yeartype+IsLeapYear(year)*30)));
+    DayOfRoshHshan = getDayOfRoshHshan(year,false,true,true,[0,0,0,1,0,1,0]);
+    yeartype = getyeartype(year,false,true,true,[0,0,0,1,0,1,0]);
+    yearLength = 354+yeartype+IsLeapYear(year)*30
+    line.push(String.fromCharCode(1487+mod7(DayOfRoshHshan))+getYearTypeText(yeartype).substr(0,1)+String.fromCharCode(1487+mod7(DayOfRoshHshan-163+yearLength))+` (${yearLength})`);
+
 
     return line;
 }
