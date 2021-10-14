@@ -100,7 +100,7 @@ function getLine(year) {
     getYearTypeText = (yeartype) => {
         let type = new Array("חסרה", "כסדרה", "שלמה");
         let ans = type[1 + yeartype];
-        return ans || '#'
+        return ans || '?'
     }
     var DayOfRoshHshan = getDayOfRoshHshan(year);
     line.push(Delays);
