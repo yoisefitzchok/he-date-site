@@ -7,7 +7,24 @@
 <script type="text/javascript" src="js/jquery.js"></script>
 <script type="text/javascript">var thisPageId="moladcalculateResearch";</script>
 <link href="style/style.css" rel="stylesheet" type="text/css"/> 
+<style>
+    .form-add-col{
+        border-style: solid;
+        width:400px;
+    }
+    .form-add-col h3{
+        margin: 5px;
+    }
+    .form-add-col label{
+        line-height: 20px;
+    }
+    input#delay4-days{
+        height:20px;
+        width:50px;
+    }
+</style>
 <script type="text/javascript">
+let cols = [];
 var today = new HeDate(new Date());
 function Time(days,hours,parts){
     this.days=days;
@@ -57,24 +74,36 @@ function mod7(day){
     return ans;
 }
 
+function delay4ToString(d4){
+    let days ="";
+    d4.forEach((d,i)=>{
+        if (d) {
+            days+= String.fromCharCode(i+1488);
+        };
+    }) 
+    return `לא ${days} ראש`; 
+}
+
 var Delays;
-function getDayOfRoshHshan(year, delay1 = true, delay2 = true, delay3 = true, delay4 = [1,0,0,1,0,1,0]) {
+function getDayOfRoshHshan(year, d={d1:true,d2:true,d3:true,d4:[1,0,0,1,0,1,0]}) {
     Delays="";
     myTime=getTimeOfMoladRoshHshann(year);
-    if (delay1 && myTime.hours >= 18) //מולד זקן בל תדרוש
+    if (d.d1 && myTime.hours >= 18) //מולד זקן בל תדרוש
         { myTime.days++; Delays = "מולד זקן בל תדרוש"; }
-    else if (delay2 && mod7(myTime.days) == 3 && ((myTime.hours == 9 && myTime.parts >= 204) | myTime.hours > 9) && !IsLeapYear(year)) // ג"ט ר"ד בשנה פשוטה גרוש
+    else if (d.d2 && mod7(myTime.days) == 3 && ((myTime.hours == 9 && myTime.parts >= 204) | myTime.hours > 9) && !IsLeapYear(year)) // ג"ט ר"ד בשנה פשוטה גרוש
         { myTime.days++; Delays = "ג\"ט ר\"ד בשנה פשוטה גרוש"; }
-    else if (delay3 && mod7(myTime.days) == 2 && ((myTime.hours == 15 && myTime.parts >= 589) | myTime.hours > 15) && IsLeapYear(year - 1)) // בט\"ו תקפ\"ט אחר עיבור עקור מלשרוש
+    else if (d.d3 && mod7(myTime.days) == 2 && ((myTime.hours == 15 && myTime.parts >= 589) | myTime.hours > 15) && IsLeapYear(year - 1)) // בט\"ו תקפ\"ט אחר עיבור עקור מלשרוש
         { myTime.days++; Delays = "בט\"ו תקפ\"ט אחר עיבור עקור מלשרוש"; }
 
-    delay4 = [null, ...delay4];
-    if (delay4[mod7(myTime.days)]) //לא אד"ו ראש
-    {
-        myTime.days++;
-        if (Delays != "") Delays += "\n";
-        Delays += "לא אד\"ו ראש";
+    if(d.d4){
+        delay4 = [null, ...d.d4];
+        if (delay4 && delay4[mod7(myTime.days)]) //לא אד"ו ראש
+            {
+                myTime.days++;
+                if (Delays != "") Delays += "\n";
+                Delays += delay4ToString(d.d4);
 
+            }
     }
     return myTime.days;
 }
@@ -82,14 +111,14 @@ function getDayOfRoshHshan(year, delay1 = true, delay2 = true, delay3 = true, de
 //כסדרה=0
 //חסרה=-1
 //שלמה=1
-function getyeartype(year, delay1 = true, delay2 = true, delay3 = true, delay4 = [1,0,0,1,0,1,0]){
-    day=getDayOfRoshHshan(year, delay1, delay2, delay3, delay4);
+function getyeartype(year, d={d1:true,d2:true,d3:true,d4:[1,0,0,1,0,1,0]}){
+    day=getDayOfRoshHshan(year, d);
     if (IsLeapYear(year)) day+=384;
     else day+=354;
-    return getDayOfRoshHshan(year+1, delay1, delay2, delay3, delay4)-day;
+    return getDayOfRoshHshan(year+1, d)-day;
 }
 
-function getLine(year) {
+function getLine(year, cols) {
     let line = [];
     time = getTimeOfMoladRoshHshann(year);
     line.push(HeDate.gimatria(year));
@@ -108,39 +137,39 @@ function getLine(year) {
     yearLength = 354+yeartype+IsLeapYear(year)*30;
     line.push(String.fromCharCode(1487+mod7(DayOfRoshHshan))+getYearTypeText(yeartype).substr(0,1)+String.fromCharCode(1487+mod7(DayOfRoshHshan-163+yearLength))+` (${yearLength})`);
 
-    DayOfRoshHshan = getDayOfRoshHshan(year,true,true,true,[0,0,0,1,0,1,0]);
-    yeartype = getyeartype(year,true,true,true,[0,0,0,1,0,1,0]);
-    yearLength = 354+yeartype+IsLeapYear(year)*30
-    line.push(String.fromCharCode(1487+mod7(DayOfRoshHshan))+getYearTypeText(yeartype).substr(0,1)+String.fromCharCode(1487+mod7(DayOfRoshHshan-163+yearLength))+` (${yearLength})`);
-
-    DayOfRoshHshan = getDayOfRoshHshan(year,false,true,true,[0,0,0,1,0,1,0]);
-    yeartype = getyeartype(year,false,true,true,[0,0,0,1,0,1,0]);
-    yearLength = 354+yeartype+IsLeapYear(year)*30
-    line.push(String.fromCharCode(1487+mod7(DayOfRoshHshan))+getYearTypeText(yeartype).substr(0,1)+String.fromCharCode(1487+mod7(DayOfRoshHshan-163+yearLength))+` (${yearLength})`);
-
+    cols.forEach(col => {
+        DayOfRoshHshan = getDayOfRoshHshan(year,col);
+        line.push(Delays);
+        yeartype = getyeartype(year,col);
+        yearLength = 354+yeartype+IsLeapYear(year)*30
+        line.push(String.fromCharCode(1487+mod7(DayOfRoshHshan))+getYearTypeText(yeartype).substr(0,1)+String.fromCharCode(1487+mod7(DayOfRoshHshan-163+yearLength))+` (${yearLength})`);
+    });
 
     return line;
 }
 
-function buildTable(from, to) {
+function buildTable(from, to, cols) {
     let table = [];
-    table.push([
+    let firstRow= [
         'שנה',
         'מעוברת?',
         'זמן מולד תשרי\n(יום: שעות: חלקים)',
         'דחיות',
-        'קביעות לפי לוח השנה',
-        `קביעות בלי דחיית יום א' ועם דחיית מולד זקן`,
-        `קביעות בלי דחיית יום א' ובלי דחיית מולד זקן`,
-    ]);
+        'קביעות לפי לוח השנה'
+    ];
+    cols.forEach((element,i) => {
+        firstRow.push('דחיות אופציה '+ (i+1));
+        firstRow.push('קביעות אופציה '+ (i+1));
+    });
+    table.push(firstRow);
     for (i=from; i<=to; i++){
-        table.push(getLine(i));
+        table.push(getLine(i,cols));
     }
     return table;
 }
 
-function showTable(from,to){
-    let table = buildTable(from,to);
+function showTable(from,to,cols){
+    let table = buildTable(from,to,cols);
 	let t = '<table border="1">';
     table.forEach((row,i) => {
         t+='<tr>';
@@ -157,10 +186,25 @@ function showTable(from,to){
     });
     t+="</table>";
     document.getElementById("myTable").innerHTML=t;
+    colsData="";
+    cols.forEach((element,i) => {
+        colsData += `<li class="col-data">`;
+        colsData += `<stong>אופציה ${i+1}:</stong> `;
+        let list = [];
+            if(element.d1){list.push("מולד זקן בל תדרוש")};
+            if(element.d2){list.push(`ג"ט ר"ד בשנה פשוטה גרוש`)};
+            if(element.d3){list.push(`בט"ו תקפ"ט אחר עיבור עקור מלשרוש`)};
+            if(element.d4){list.push(delay4ToString(element.d4))};
+            colsData+= `${list.join(', ')}`;
+            if (list.length==0){colsData += "ללא דחיות";}
+        colsData+=`</li>`;
+    });
+
+    document.getElementById("cols-data").innerHTML=colsData;
 }
 
-function exportCsv(from,to){
-    let table = buildTable(from,to);
+function exportCsv(from,to,cols){
+    let table = buildTable(from,to,cols);
     let csvContent = 'data:text/csv;charset=utf-8,\ufeff';
     table.forEach((row) => {
         row.forEach(col =>{
@@ -206,8 +250,8 @@ function changeHash(){
 		to=from;
 	}
 	else 
-		showTable(from,to);
-	window.location.hash = from+","+to;
+		showTable(from,to,cols);    
+    window.location.hash = from+","+to;
 	$("#from").val(HeDate.gimatria(from));
 	$("#to").val(HeDate.gimatria(to));
 }
@@ -218,14 +262,33 @@ $(document).ready(function () {
     changeHash();	
 	$( "#yearSelect" ).submit(function( event ) {
 		event.preventDefault();
-		let from = HeDate.regimatria($("#from").val());
+        let from = HeDate.regimatria($("#from").val());
 		let to = HeDate.regimatria($("#to").val());
 		window.location.hash = from+","+to;
+	});
+    $( "#addCol" ).submit(function( event ) {
+		event.preventDefault();
+        let data = new FormData(event.target);
+        let delay4 = [];
+        for (let i=1; i<=7; i++){
+            delay4.push(+(data.get('delay4-days').indexOf(String.fromCharCode(1487+i)) > -1))
+        }
+        let col = {
+            d1: !!data.get('delay1'),
+            d2: !!data.get('delay2'),
+            d3: !!data.get('delay3'),
+            d4: (!!data.get('delay4')) && delay4
+        };
+        cols.push(col);
+        let tmp=window.location.hash.substr(1).split(",");
+		let from = parseInt(tmp[0]);
+		let to = parseInt(tmp[1]);
+        showTable(from,to,cols);
 	});
     $( "#export-csv" ).click(()=>{
         let from = HeDate.regimatria($("#from").val());
 		let to = HeDate.regimatria($("#to").val());
-        exportCsv(from,to);
+        exportCsv(from,to,cols);
     });
 });
 
@@ -265,7 +328,29 @@ src="https://pagead2.googlesyndication.com/pagead/show_ads.js">
 
 
 
-מחשב עבור כל שנה את זמן מולד הירח של ראש השנה, את הדחיות ואת סוג השנה.
+<form id="addCol">
+    <div class="form-add-col">
+        <h3>הוספת אופצית קביעות</h3>
+        <div>
+            <input type="checkbox" id="delay1" name="delay1" checked>
+            <label for="delay1">מולד זקן בל תדרוש</label>
+          </div>
+          
+          <div>
+            <input type="checkbox" id="delay2" name="delay2"checked >
+            <label for="delay2">ג"ט ר"ד בשנה פשוטה גרוש</label>
+          </div>
+          <div>
+            <input type="checkbox" id="delay3" name="delay3" checked>
+            <label for="delay3">בט"ו תקפ"ט אחר עיבור עקור מלשרוש</label>
+          </div>
+          <div>
+            <input type="checkbox" id="delay4" name="delay4" checked>
+            <label for="delay4">לא <input type="text" id="delay4-days" name="delay4-days" value="אדו" /> ראש</label>
+          </div>
+          <input type="submit" value="הוספת אופציה" />
+    </div>
+</form>
 <br />
 <br />
 <form id="yearSelect">
@@ -276,6 +361,7 @@ src="https://pagead2.googlesyndication.com/pagead/show_ads.js">
 	<input id="export-csv" type="button" value="יצוא לאקסל" />
 </form>
 
+<ul id="cols-data"></ul>
 <div id="myTable"></div>
 <br/>
 
