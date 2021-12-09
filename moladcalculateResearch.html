@@ -7,10 +7,14 @@
 <script type="text/javascript" src="js/jquery.js"></script>
 <script type="text/javascript">var thisPageId="moladcalculateResearch";</script>
 <link href="style/style.css" rel="stylesheet" type="text/css"/> 
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Rubik">
 <style>
+    body {
+        font-family: 'Rubik', sans-serif;
+    }
     .form-add-col{
         border-style: solid;
-        width:400px;
+        width:600px;
     }
     .form-add-col h3{
         margin: 5px;
@@ -22,9 +26,20 @@
         height:20px;
         width:50px;
     }
+    .option-title{
+        text-decoration: underline;
+    }
 </style>
 <script type="text/javascript">
 let cols = [];
+defaultCol = {
+    d1:true,
+    d2:true,
+    d3:true,
+    d4:[1,0,0,1,0,1,0],
+    leap: [null,false,false,true,false,false,true,false,true,false,false,true,false,false,true,false,false,true,false,true],
+    firstMolad: {"days": 2,"hours": 5,"parts": 204}
+}
 var today = new HeDate(new Date());
 function Time(days,hours,parts){
     this.days=days;
@@ -37,20 +52,16 @@ function intDiv(a, b) {
 }
 
 
-function getTimeOfMoladRoshHshann(year) {
-    var numOfMonth=(year-1)*12+intDiv(year-1,19)*7; //(y-1)*12+((y-1) div 19)*7
-    if ((year-1)%19>=17) numOfMonth+=6;
-    else if((year-1)%19>=14) numOfMonth+=5;
-    else if((year-1)%19>=11) numOfMonth+=4;
-    else if((year-1)%19>=8) numOfMonth+=3;
-    else if((year-1)%19>=6) numOfMonth+=2;
-    else if((year-1)%19>=3) numOfMonth++;
+function getTimeOfMoladRoshHshann(year, col) {
+    var numOfMonth=(year-1)*12+intDiv(year-1,19)*(col.leap.filter(Boolean).length); //(y-1)*12+((y-1) div 19)*7
+    numOfMonth+=col.leap.slice(0,year%19!=0?year%19:19).filter(Boolean).length;
     
     myTime=new Time(numOfMonth*29,numOfMonth*12,numOfMonth*793);
+    
     //add the first molad.
-    myTime.days+=2;
-    myTime.hours+=5;
-    myTime.parts+=204;
+    myTime.days+=col.firstMolad.days;
+    myTime.hours+=col.firstMolad.hours;
+    myTime.parts+=col.firstMolad.parts;
     
     myTime.hours+=intDiv(myTime.parts,1080);
     myTime.parts=myTime.parts%1080;
@@ -60,12 +71,8 @@ function getTimeOfMoladRoshHshann(year) {
     return myTime;
 }
 
-IsLeapYear = function (year){
-	year=year%19;
-	if (year==3 || year==6 || year==8 || year==11 || year==14 || year==17 || year==0)
-		return true;
-	else
-		return false;
+IsLeapYear = function (year, col){
+    return col.leap[year%19!=0?year%19:19];
 }
 
 function mod7(day){
@@ -85,23 +92,23 @@ function delay4ToString(d4){
 }
 
 var Delays;
-function getDayOfRoshHshan(year, d={d1:true,d2:true,d3:true,d4:[1,0,0,1,0,1,0]}) {
+function getDayOfRoshHshan(year, col) {
     Delays="";
-    myTime=getTimeOfMoladRoshHshann(year);
-    if (d.d1 && myTime.hours >= 18) //מולד זקן בל תדרוש
+    myTime=getTimeOfMoladRoshHshann(year, col);
+    if (col.d1 && myTime.hours >= 18) //מולד זקן בל תדרוש
         { myTime.days++; Delays = "מולד זקן בל תדרוש"; }
-    else if (d.d2 && mod7(myTime.days) == 3 && ((myTime.hours == 9 && myTime.parts >= 204) | myTime.hours > 9) && !IsLeapYear(year)) // ג"ט ר"ד בשנה פשוטה גרוש
+    else if (col.d2 && mod7(myTime.days) == 3 && ((myTime.hours == 9 && myTime.parts >= 204) | myTime.hours > 9) && !IsLeapYear(year,col)) // ג"ט ר"ד בשנה פשוטה גרוש
         { myTime.days++; Delays = "ג\"ט ר\"ד בשנה פשוטה גרוש"; }
-    else if (d.d3 && mod7(myTime.days) == 2 && ((myTime.hours == 15 && myTime.parts >= 589) | myTime.hours > 15) && IsLeapYear(year - 1)) // בט\"ו תקפ\"ט אחר עיבור עקור מלשרוש
+    else if (col.d3 && mod7(myTime.days) == 2 && ((myTime.hours == 15 && myTime.parts >= 589) | myTime.hours > 15) && IsLeapYear(year - 1,col)) // בט\"ו תקפ\"ט אחר עיבור עקור מלשרוש
         { myTime.days++; Delays = "בט\"ו תקפ\"ט אחר עיבור עקור מלשרוש"; }
 
-    if(d.d4){
-        delay4 = [null, ...d.d4];
+    if(col.d4){
+        delay4 = [null, ...col.d4];
         if (delay4 && delay4[mod7(myTime.days)]) //לא אד"ו ראש
             {
                 myTime.days++;
                 if (Delays != "") Delays += "\n";
-                Delays += delay4ToString(d.d4);
+                Delays += delay4ToString(col.d4);
 
             }
     }
@@ -111,19 +118,19 @@ function getDayOfRoshHshan(year, d={d1:true,d2:true,d3:true,d4:[1,0,0,1,0,1,0]})
 //כסדרה=0
 //חסרה=-1
 //שלמה=1
-function getyeartype(year, d={d1:true,d2:true,d3:true,d4:[1,0,0,1,0,1,0]}){
-    day=getDayOfRoshHshan(year, d);
-    if (IsLeapYear(year)) day+=384;
+function getyeartype(year, col){
+    day=getDayOfRoshHshan(year, col);
+    if (IsLeapYear(year,col)) day+=384;
     else day+=354;
-    return getDayOfRoshHshan(year+1, d)-day;
+    return getDayOfRoshHshan(year+1, col)-day;
 }
 
 function getLine(year, cols) {
     let line = [];
-    time = getTimeOfMoladRoshHshann(year);
+    time = getTimeOfMoladRoshHshann(year, defaultCol);
     line.push(HeDate.gimatria(year));
     var leap = new Array("פשוטה", "מעוברת");
-    line.push(leap[IsLeapYear(year) * 1] + " ("+(year%19==0?19:year%19)+")");
+    line.push(leap[IsLeapYear(year, defaultCol) * 1] + " ("+(year%19==0?19:year%19)+")");
     var days = new Array("", "ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת");
     line.push(`${days[mod7(time.days)]} : ${time.hours} : ${time.parts}`);
     getYearTypeText = (yeartype) => {
@@ -131,17 +138,20 @@ function getLine(year, cols) {
         let ans = type[1 + yeartype];
         return ans || '?'
     }
-    var DayOfRoshHshan = getDayOfRoshHshan(year);
+    var DayOfRoshHshan = getDayOfRoshHshan(year, defaultCol);
     line.push(Delays);
-    var yeartype = getyeartype(year);
-    yearLength = 354+yeartype+IsLeapYear(year)*30;
+    var yeartype = getyeartype(year, defaultCol);
+    yearLength = 354+yeartype+IsLeapYear(year, defaultCol)*30;
     line.push(String.fromCharCode(1487+mod7(DayOfRoshHshan))+getYearTypeText(yeartype).substr(0,1)+String.fromCharCode(1487+mod7(DayOfRoshHshan-163+yearLength))+` (${yearLength})`);
 
     cols.forEach(col => {
+        time = getTimeOfMoladRoshHshann(year, col);
+        line.push(leap[IsLeapYear(year, col) * 1] + " ("+(year%19==0?19:year%19)+")");
+        line.push(`${days[mod7(time.days)]} : ${time.hours} : ${time.parts}`);
         DayOfRoshHshan = getDayOfRoshHshan(year,col);
         line.push(Delays);
         yeartype = getyeartype(year,col);
-        yearLength = 354+yeartype+IsLeapYear(year)*30
+        yearLength = 354+yeartype+IsLeapYear(year, col)*30
         line.push(String.fromCharCode(1487+mod7(DayOfRoshHshan))+getYearTypeText(yeartype).substr(0,1)+String.fromCharCode(1487+mod7(DayOfRoshHshan-163+yearLength))+` (${yearLength})`);
     });
 
@@ -158,6 +168,8 @@ function buildTable(from, to, cols) {
         'קביעות לפי לוח השנה'
     ];
     cols.forEach((element,i) => {
+        firstRow.push('מעוברת? אופציה '+ (i+1));
+        firstRow.push('זמן מולד תשרי אופציה '+ (i+1));
         firstRow.push('דחיות אופציה '+ (i+1));
         firstRow.push('קביעות אופציה '+ (i+1));
     });
@@ -186,17 +198,20 @@ function showTable(from,to,cols){
     });
     t+="</table>";
     document.getElementById("myTable").innerHTML=t;
+    var days = new Array("", "ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת");
     colsData="";
     cols.forEach((element,i) => {
         colsData += `<li class="col-data">`;
-        colsData += `<stong>אופציה ${i+1}:</stong> `;
+        colsData += `<strong class="option-title">אופציה ${i+1}:</strong> `;
+        colsData+= `<strong>מולד בראשית: </strong> ${days[element.firstMolad.days]} : ${element.firstMolad.hours} : ${element.firstMolad.parts}. `;
+        colsData+= `<strong>עיבור: </strong> ${element.leap.map((val,i)=>{return (val? String.fromCharCode(1487+(i>10?i%10:i)):'')+(i==10?' ': '')}).join('')}. `;
         let list = [];
-            if(element.d1){list.push("מולד זקן בל תדרוש")};
-            if(element.d2){list.push(`ג"ט ר"ד בשנה פשוטה גרוש`)};
-            if(element.d3){list.push(`בט"ו תקפ"ט אחר עיבור עקור מלשרוש`)};
-            if(element.d4){list.push(delay4ToString(element.d4))};
-            colsData+= `${list.join(', ')}`;
-            if (list.length==0){colsData += "ללא דחיות";}
+        if(element.d1){list.push("מולד זקן בל תדרוש")};
+        if(element.d2){list.push(`ג"ט ר"ד בשנה פשוטה גרוש`)};
+        if(element.d3){list.push(`בט"ו תקפ"ט אחר עיבור עקור מלשרוש`)};
+        if(element.d4){list.push(delay4ToString(element.d4))};
+        if (list.length>0){ colsData+= `<strong>דחיות: </strong> ${list.join(', ')}. `; }
+        else{colsData += "<strong>ללא דחיות. </strong>";}
         colsData+=`</li>`;
     });
 
@@ -277,8 +292,21 @@ $(document).ready(function () {
             d1: !!data.get('delay1'),
             d2: !!data.get('delay2'),
             d3: !!data.get('delay3'),
-            d4: (!!data.get('delay4')) && delay4
+            d4: (!!data.get('delay4')) && delay4,
+            leap: [],
+            firstMolad: null
         };
+        col.leap.push(null);
+        for(let i = 1 ;i<=19; i++){
+            col.leap.push(!!data.get('Leap'+i))
+        }
+        let firstMoladArray = data.get('first-molad').split(':');
+        col.firstMolad = {
+            days: mod7(Number(firstMoladArray[0]) || 2),
+            hours: Number(firstMoladArray[1]) || 5,
+            parts: Number(firstMoladArray[2]) || 204
+        }
+        console.log(col);
         cols.push(col);
         let tmp=window.location.hash.substr(1).split(",");
 		let from = parseInt(tmp[0]);
@@ -334,21 +362,45 @@ src="https://pagead2.googlesyndication.com/pagead/show_ads.js">
         <div>
             <input type="checkbox" id="delay1" name="delay1" checked>
             <label for="delay1">מולד זקן בל תדרוש</label>
-          </div>
-          
-          <div>
+        </div>
+        <div>
             <input type="checkbox" id="delay2" name="delay2"checked >
             <label for="delay2">ג"ט ר"ד בשנה פשוטה גרוש</label>
-          </div>
-          <div>
+        </div>
+        <div>
             <input type="checkbox" id="delay3" name="delay3" checked>
             <label for="delay3">בט"ו תקפ"ט אחר עיבור עקור מלשרוש</label>
-          </div>
-          <div>
+        </div>
+        <div>
             <input type="checkbox" id="delay4" name="delay4" checked>
             <label for="delay4">לא <input type="text" id="delay4-days" name="delay4-days" value="אדו" /> ראש</label>
-          </div>
-          <input type="submit" value="הוספת אופציה" />
+        </div>
+        <div>
+            שנים מעוברת במחזור: 
+            <input type="checkbox" id="Leap1" name="Leap1" ><label for="Leap1">א'</label>
+            <input type="checkbox" id="Leap2" name="Leap2" ><label for="Leap2">ב'</label>
+            <input type="checkbox" id="Leap3" name="Leap3" checked><label for="Leap3">ג'</label>
+            <input type="checkbox" id="Leap4" name="Leap4" ><label for="Leap4">ד'</label>
+            <input type="checkbox" id="Leap5" name="Leap5" ><label for="Leap5">ה'</label>
+            <input type="checkbox" id="Leap6" name="Leap6" checked><label for="Leap6">ו'</label>
+            <input type="checkbox" id="Leap7" name="Leap7" ><label for="Leap7">ז'</label>
+            <input type="checkbox" id="Leap8" name="Leap8" checked><label for="Leap8">ח'</label>
+            <input type="checkbox" id="Leap9" name="Leap9" ><label for="Leap9">ט'</label>
+            <input type="checkbox" id="Leap10" name="Leap10" ><label for="Leap10">י'</label>
+            <input type="checkbox" id="Leap11" name="Leap11" checked><label for="Leap11">י"א</label>
+            <input type="checkbox" id="Leap12" name="Leap12" ><label for="Leap12">י"ב</label>
+            <input type="checkbox" id="Leap13" name="Leap13" ><label for="Leap13">י"ג</label>
+            <input type="checkbox" id="Leap14" name="Leap14" checked><label for="Leap14">י"ד</label>
+            <input type="checkbox" id="Leap15" name="Leap15" ><label for="Leap15">ט"ו</label>
+            <input type="checkbox" id="Leap16" name="Leap16" ><label for="Leap16">ט"ז</label>
+            <input type="checkbox" id="Leap17" name="Leap17" checked><label for="Leap17">י"ז</label>
+            <input type="checkbox" id="Leap18" name="Leap18" ><label for="Leap18">י"ח</label>
+            <input type="checkbox" id="Leap0" name="Leap19" checked><label for="Leap0">י"ט</label>
+        </div>
+        <div>
+            מולד בראשית: <input type="text" id="first-molad" name="first-molad" value="2:5:204" /></label>
+        </div>
+        <input type="submit" value="הוספת אופציה" />
     </div>
 </form>
 <br />
