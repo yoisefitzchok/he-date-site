@@ -1,159 +1,194 @@
-﻿<html dir="rtl">
+<html dir="rtl">
 
 <head>
 <title>לוח השנה העברי - מחשבון מולדות הירח</title>
 <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
-<script type="text/javascript" src="js/heDate.min.js"></script>
+<script type="text/javascript" src="js/HeDate.min.js"></script>
 <script type="text/javascript" src="js/jquery.js"></script>
 <link href="style/style.css" rel="stylesheet" type="text/css"/> 
 <script type="text/javascript">
 var today = new HeDate(new Date());
-function Time(days,hours,parts){
-    this.days=days;
-    this.hours=hours;
-    this.parts=parts;
-}
 
-function intDiv(a, b) {
-    return (a - a % b) / b;
-}
-
-
-function getTimeOfMoladRoshHshann(year,month) {
-    if (isNaN(month)) month = 1;
-    var numOfMonth=(year-1)*12+intDiv(year-1,19)*7; //(y-1)*12+((y-1) div 19)*7
-    if ((year-1)%19>=17) numOfMonth+=6;
-    else if((year-1)%19>=14) numOfMonth+=5;
-    else if((year-1)%19>=11) numOfMonth+=4;
-    else if((year-1)%19>=8) numOfMonth+=3;
-    else if((year-1)%19>=6) numOfMonth+=2;
-    else if((year-1)%19>=3) numOfMonth++;
+gimatria = function (num){
+	var ans="";
+	var temp=num%1000;
+	var abc=" אבגדהוזחטיכלמנסעפצקרשת"
 	
-	numOfMonth+=month-1;
+	if (temp>=100 && temp<=999) 	//מאות
+		{var hundreds = (temp-temp%100)/100;
+		temp=temp%100;
+		while (hundreds >= 4)
+			{ans = ans + abc.charAt(22);
+			hundreds = hundreds - 4;}
+		if (hundreds >> 0)
+			ans = ans + abc.charAt(18 + hundreds);}
+
+	if (temp>=10 && temp<=99) 	//עשרות
+		{var tens=(temp-temp%10)/10;
+		temp=temp%10;
+		if ((tens==1) && ((temp==5)||(temp==6))) //ט"ו  ט"ז
+			{tens = tens-1;
+			temp = temp + 1;}
+		ans = ans + abc.charAt(9 + tens);
+		}
+
+	if (temp>=1 && temp<=9) 	// יחידות
+		ans = ans + abc.charAt(temp);
+
+	if (ans.length>=2)		//הוספת גרש או גרשיים
+		ans = ans.substring(0,(ans.length-1)) + '"' + ans.substring(ans.length-1);
+	else if (ans.length==1)
+		ans =ans + "'";
+
+	if (num>=1000 && num<=9999) //אלפים
+		ans = abc.charAt((num-num%1000)/1000) + "'" + ans;
 	
-	if(!IsLeapYear(year) && month>6)
-		numOfMonth--;
-    
-    myTime=new Time(numOfMonth*29,numOfMonth*12,numOfMonth*793);
-    //add the first molad.
-    myTime.days+=2;
-    myTime.hours+=5;
-    myTime.parts+=204;
-    
-    myTime.hours+=intDiv(myTime.parts,1080);
-    myTime.parts=myTime.parts%1080;
-    myTime.days+=intDiv(myTime.hours,24);
-    myTime.hours=myTime.hours%24;
+	if (num%1000 == 0) ans += " אלפים"
 
-    return myTime;
+	return ans
 }
 
-IsLeapYear = function (year){
-	year=year%19;
-	if (year==3 || year==6 || year==8 || year==11 || year==14 || year==17 || year==0)
-		return true;
-	else
-		return false;
-}
-
-function mod7(day){
-    var ans=day%7;
-    if (ans==0) ans=7;
-    return ans;
-}
-
-var Delays = [];
-function getDayOfRoshHshan(year) {
-    Delays[year]="";
-    myTime=getTimeOfMoladRoshHshann(year);
-    if (myTime.hours >= 18) //מולד זקן בל תדרוש
-        { myTime.days++; Delays[year] = "מולד זקן בל תדרוש"; }
-    else if (mod7(myTime.days) == 3 && ((myTime.hours == 9 && myTime.parts >= 204) | myTime.hours > 9) && !IsLeapYear(year)) // ג"ט ר"ד בשנה פשוטה גרוש
-        { myTime.days++; Delays[year] = "ג\"ט ר\"ד בשנה פשוטה גרוש"; }
-    else if (mod7(myTime.days) == 2 && ((myTime.hours == 15 && myTime.parts >= 589) | myTime.hours > 15) && IsLeapYear(year - 1)) // בט\"ו תקפ\"ט אחר עיבור עקור מלשרוש
-        { myTime.days++; Delays[year] = "בט\"ו תקפ\"ט אחר עיבור עקור מלשרוש"; }
-
-        if (mod7(myTime.days) == 1 | mod7(myTime.days) == 4 | mod7(myTime.days) == 6) //לא אד"ו ראש
-        {
-            myTime.days++;
-            if (Delays[year] != "") Delays[year] += "<br/>";
-            Delays[year] += "לא אד\"ו ראש";
-
-        }
-    return myTime.days;
-}
-
-//כסדרה=0
-//חסרה=-1
-//שלמה=1
-function getyeartype(year){
-    day=getDayOfRoshHshan(year);
-    if (IsLeapYear(year)) day+=384;
-    else day+=354;
-    return getDayOfRoshHshan(year+1)-day;
-}
-
-function getSeptemberDatOfRoshHashanah(year){
-    //a-Number of datys from september 1739-september in the calculate year.
-    var a=intDiv(year-3761,4)-intDiv(year-3761,100)+intDiv(year-3761,400);
-    a-=intDiv(1739,4)-intDiv(1739,100)+intDiv(1739,400);
-    a+=(year-3761-1739)*365;
-    //b-Number of days from Rosh Hashanah 5500-Rosh Hashanah in the calculate year.
-    var b=getDayOfRoshHshan(year)-getDayOfRoshHshan(5500);
-    return b-a+33;
-}
-
-function getGregorianDateDatOfRoshHashanah(year){
-    var myDate=new Date();
-    myDate.setFullYear(year-3761,8,getSeptemberDatOfRoshHashanah(year));
-    return myDate;
-}
-
-function showTable(year){
-	var t="<h1>שנת "+HeDate.gimatria(year)+"</h1>";
-	
-
-	time = getTimeOfMoladRoshHshann(year);
-    var days = new Array("", "ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת");
-
-	var leap = new Array("פשוטה", "מעוברת");
-	var type = new Array("חסרה", "כסדרה", "שלמה");
-	var DayOfRoshHshan = getDayOfRoshHshan(year);
-	t+="<ul>";
-	t+="<li>"+type[1 + getyeartype(year)]+", " + leap[IsLeapYear(year) * 1] +  " ("+String.fromCharCode(1487+mod7(DayOfRoshHshan))+type[1 + getyeartype(year)].substr(0,1)+String.fromCharCode(1487+mod7(DayOfRoshHshan+191+getyeartype(year)+IsLeapYear(year)*30)) +")</li>";
-	t+="<li>שנה "+(year%19==0?19:year%19)+" במחזור</li>";
-	if (Delays[year]!=""){
-		t+="<li>"+Delays[year]+"</li>";
+regimatria = function (str){
+	var ans=0;
+	var temp=str;
+	var abc=" אבגדהוזחטיכלמנסעפצקרשת";
+	var index;
+	while (temp.length>>0){
+		index=abc.indexOf(temp.charAt(0));
+		if (index>0){
+			if (index<=9)
+				ans=ans+index;
+			else if (index<=18)
+				ans=ans+(index-9)*10;
+			else
+				ans=ans+(index-18)*100;
+		}
+		temp=temp.substring(1,temp.length);
 	}
-	t+="<li> אורך השנה: "+(354+ getyeartype(year) + 30*IsLeapYear(year)) + " ימים</li>";
-	t+="</ul>";
+	index=abc.indexOf(str.charAt(0));
+	if (ans>index & index>0 & index<=9 & ans!=15 & ans!=16)
+		ans=ans + index*1000 - index;
 	
+	if (str.includes("אלפים")) ans = index*1000
 	
-	t+= "<table border=1>";
-	t+= "<tr><td>חודש</td><td>זמן מולד<br/>(יום: שעות: חלקים)</td><td>יום בשבוע א בחודש</td><td>תאריך לועזי א בחודש</td></tr>";
-	for (var i=1;i<=13;i++){
-		if (i==6 && !IsLeapYear(year)) continue;
-		var d=new HeDate(year,i,1);
-		t+="<tr>";
-		t+="<td>"+d.getMonthString()+"</td>";
-		time = getTimeOfMoladRoshHshann(year,i);
-		t+="<td>"+days[mod7(time.days)] + " : " + time.hours + " : " + time.parts+"</td>";
-		t+="<td>"+days[d.getDay()]+"</td>";
-		var gDate=d.ConvertToGregorian();
-		t+= "<td>" + gDate.getDate() + "/" + (gDate.getMonth() + 1) + "/" + gDate.getFullYear()+"</td>";
-		
-		t+="</tr>";
-	}
-	t+= "</table>"
-    document.getElementById("myTable").innerHTML=t;
+	return ans;
 }
+
+function gimatria2 (n) {
+var t = gimatria(n)
+if (n > 1000)
+	{
+	t = "תתר" + t.slice(2)
+	if (t[t.length - 1] == "'") t = 'תתר"' + t[t.length - 2]
+	}
+if (n == 1000) t = 'תת"ר'
+return t}
+
+namesOFdays = ["שבת","ראשון","שני","שלישי","רביעי","חמישי","שישי","שבת"]
+yamim = [1,0,1,1,0,1,0,1]
+display_options = [0,0,0,0,0,0,0,0,0,0,0]
+TDM = ["יום, שעות, חלקים" , "חלקים-שעות-יום" , "יום : שעות : חלקים" , "יום שעות חלקים" , "ליל/יום שעות(12) חלקים" , "חלקים מתחילת ליל שבת" , "יום בשבר עשרוני" , "יום, שעות, דקות, חלקים"]
+
+function months_passed (year) {return Math.floor(((year - 1) * 235 + 1) / 19)}
+
+function molad (hodex){
+sumOFparts = hodex * 765433 + 57444
+sumOFdays = Math.floor(sumOFparts / 25920)
+dayOFmolad = (sumOFdays % 7 + 6) % 7 + 1
+partsOFday = (sumOFparts % 25920 + 25920) % 25920
+hourOFmolad = Math.floor(partsOFday / 1080)
+partsOFhour = partsOFday % 1080}
+
+function kviah (year){
+molad(months_passed(year))
+var rox = sumOFdays , dhiyot = []
+if (yamim[(rox%7+7)%7] > 0 && partsOFday >= 19440) rox ++ , dhiyot.push("מולד זקן")
+if (yamim[(rox%7+7)%7] < 1) rox ++ , dhiyot.push("אדו")
+return [rox , dhiyot]}
+
+function rox_haxana (year){
+var last = kviah(year-1)[0] , next = kviah(year+1)[0] , current = kviah(year) , rox = current[0] , dhiyot = current[1]
+if (rox - last == 382) rox ++ , dhiyot.push("בט\"ו תקפ\"ט")
+if (next - rox == 356) rox ++ , dhiyot.push("ג\"ט ר\"ד")
+if (yamim[(rox%7+7)%7]<1) rox ++
+return [rox , dhiyot]}
+
+function kviut (year){
+xana_habaa = rox_haxana(year+1)[0] , xana_zo = rox_haxana(year) , rox = xana_zo[0] , dhiyot = xana_zo[1] , lengthOFyear = xana_habaa - rox
+daysOFmonths = [30,29,30,29,30,29,30,29,30,29,30,29]
+namesOFmonths = ["תשרי","מרחשון","כסלו","טבת","שבט","אדר","ניסן","אייר","סיון","תמוז","אב","אלול"]
+if (lengthOFyear > 365) daysOFmonths.splice(5,0,30) , namesOFmonths.splice(5,1,"אדר א'","אדר ב'")
+daysOFmonths[1] += (lengthOFyear%10 == 5) , daysOFmonths[2] -= (lengthOFyear%10 == 3)
+year_order = ["חסרים","כסדרם","שלמים"]
+year_order = year_order[lengthOFyear%10-3]}
+
+function TOcommon (days){
+var year = Math.floor((days - 122.1) / 365.25)
+var sum = Math.floor(year * 365.25)
+var month = Math.floor((days - sum) / 30.61)
+var day = days - sum - Math.floor(month * 30.61)
+month -= (month > 13) * 12 + 1
+year += (month < 3)
+return [day , month , year]}
+
+function loazi (days){ days -= 1372999
+var difference = Math.ceil(Math.floor((days - 146221.25) / 36524.25) * 3 / 4) + 1
+var julian_date = TOcommon(days)
+var gregorian_date = TOcommon(days + difference)
+julian_date[2] -= (julian_date[2] < 1)
+return [gregorian_date , julian_date , difference , days + 1720995]}
+
+function molad_options (){
+return [
+namesOFdays[dayOFmolad]+", "+hourOFmolad+", "+partsOFhour,
+dayOFmolad+"-"+hourOFmolad+"-"+partsOFhour,
+gimatria(dayOFmolad)+" : "+hourOFmolad+" : "+partsOFhour,
+gimatria(dayOFmolad)+" "+gimatria(hourOFmolad)+" "+gimatria2(partsOFhour),
+(hourOFmolad < 12 ? "ליל" : "יום")+" "+gimatria(dayOFmolad)+" "+gimatria(hourOFmolad % 12)+" "+gimatria2(partsOFhour),
+(sumOFparts % 181440 + 181440) % 181440,
+((sumOFparts % 181440 / 25920 + 6) % 7 + 1).toFixed(9),
+(hourOFmolad < 12 ? "ליל" : "יום")+" "+namesOFdays[dayOFmolad]+", "+((hourOFmolad + 5) % 12 + 1) +", "+Math.floor(partsOFhour / 18)+", "+(partsOFhour % 18)
+]}
+
+function showTable (year){ kviut(year)
+var s = months_passed(year) , o = daysOFmonths.length , t = 0 , r = rox , d = dhiyot
+var output = "<table border=1><tr><th rowspan=2>חודש</th><th>מולד</th><th>ראש השנה</th><th colspan=2><button onclick=change_table(9)>ראש חודש</button></th><th rowspan=2><button onclick=change_table(10)>אורך</button></th><th colspan=2>תאריך לועזי א' בחודש</th></tr>"+
+"<tr><th><button id=show_molad onclick=change_table(8)>"+TDM[display_options[8] % 8]+"</button></th><th>דחיות</th><th>ל' שעבר</th><th>א' נוכחי</th><th>גרגוריאני</th><th>יוליאני</th></tr>"
+while (t <= o)
+	{
+	var l = loazi(r) , h = [(r % 7 + 5) % 7 + 1 , (r % 7 + 6) % 7 + 1]
+	h = [[namesOFdays[h[0]] , namesOFdays[h[1]]] , [gimatria(h[0]) , gimatria(h[1])] , h]
+	if (t == o) d = rox_haxana(year+1)[1]
+	molad(s+t)
+	line = [
+	namesOFmonths[t%o],
+	molad_options()[display_options[8] % 8],
+	(t % o < 1 ? (d.length > 0 ? d.join(" ו") : "אין") : ""),
+	(daysOFmonths[t-1] > 29 ? h[display_options[9] % 3][0] : ""),
+	h[display_options[9] % 3][1],
+	display_options[10] % 2 ? gimatria(daysOFmonths[t]) : daysOFmonths[t],
+	"\u200E"+l[0].join("/"),
+	"\u200E"+l[1].join("/")]
+	
+	output += "<tr><td>"+line.join("</td><td>")+"</td></tr>"
+	r += daysOFmonths[t++]
+	}
+document.getElementById("myTable").innerHTML = "<H1>שנת "+((year > 0) ? gimatria(year) : "\u200E" + (year - 1))+"</H1><p>"+
+((year > 0) ? year+" לבריאת העולם, &nbsp; " : "")+((year > 3449) ? (year-3449)+" לשטרות, &nbsp; " : "")+((year > 3829) ? (year-3829)+" לחורבן, &nbsp; " : "")+((year%7+6)%7+1)+" בשמיטה.<br>"+
+((year%19+18)%19+1)+" במחזור העיבור, &nbsp; "+(daysOFmonths.length == 12 ? "פשוטה" : "מעוברת")+", &nbsp; ירחיה "+year_order+", &nbsp; ימיה "+lengthOFyear+", &nbsp; סימנה "+
+gimatria((rox%7+6)%7+1)[0]+year_order[0]+gimatria((xana_habaa%7+11)%7+1)[0]+".</p>"+output+"</table>"
+}
+
+function change_table (m){
+display_options[m] ++
+showTable(numberOFyear)}
 
 function yearChange(o) {
     var str = o.value;
     var num = parseInt(str);
-    if (isNaN(num)) num = HeDate.regimatria(str);
+    if (isNaN(num)) num = regimatria(str);
     if (num == 0) num = 1;
-    str = HeDate.gimatria(num);
+    str = gimatria(num);
     o.value=str;
 }
 
@@ -167,7 +202,9 @@ function changeHash(){
 	else 
 		showTable(year);
 	window.location.hash = year;
-	$("#year").val(HeDate.gimatria(year));
+	$("#year").val(gimatria(year));
+	
+	numberOFyear = year
 }
 
 
@@ -176,7 +213,7 @@ $(document).ready(function () {
     changeHash();	
 	$( "#yearSelect" ).submit(function( event ) {
 		event.preventDefault();
-		var year = HeDate.regimatria($("#year").val());
+		var year = regimatria($("#year").val());
 		window.location.hash = year;
 	});
 });
@@ -228,9 +265,9 @@ src="https://pagead2.googlesyndication.com/pagead/show_ads.js">
 <div id="myTable"></div>
 <br/>
 
-נבנה ע"י דניאל ארז. להערות והארות נא לשלוח דוא"ל erezdaniel7@gmail.com
-
-
+נבנה ע"י דניאל ארז erezdaniel7@gmail.com
+<br/>
+שופץ ע"י יוסף יצחק רוטנברג yohllikolbargyo@gmail.com
 </body>
 <script type="text/javascript" src="js/script.js"></script>
 
