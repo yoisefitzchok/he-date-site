@@ -7,8 +7,6 @@
 <script type="text/javascript" src="js/jquery.js"></script>
 <link href="style/style.css" rel="stylesheet" type="text/css"/> 
 <script type="text/javascript">
-var today = new HeDate(new Date());
-
 gimatria = function (num){
 	var ans="";
 	var temp=num%1000;
@@ -122,6 +120,15 @@ daysOFmonths[1] += (lengthOFyear%10 == 5) , daysOFmonths[2] -= (lengthOFyear%10 
 year_order = ["חסרים","כסדרם","שלמים"]
 year_order = year_order[lengthOFyear%10-3]}
 
+function hebrew_date (days){
+year_number = Math.ceil((days - 49)  * 98496 / 35975351)
+if (rox_haxana(year_number + 1)[0] <= days) year_number ++
+kviut(year_number)
+dayOFmonth = days - xana_zo[0] , monthOFyear = 0
+while (dayOFmonth >= 0) dayOFmonth -= daysOFmonths[monthOFyear ++]
+dayOFmonth += daysOFmonths[-- monthOFyear] + 1
+return [gimatria(dayOFmonth) , namesOFmonths[monthOFyear] , gimatria(year_number - (year_number < 1))]}
+
 function TOcommon (days){
 var year = Math.floor((days - 122.1) / 365.25)
 var sum = Math.floor(year * 365.25)
@@ -197,7 +204,7 @@ function changeHash(){
 	tmp=window.location.hash.substr(1);
 	year=parseInt(tmp);
 	if(year<=0 | isNaN(year)){
-		year=today.getYear();
+		year=hebrew_date(Math.ceil(Date.now() / 86400000 + 2092591 + 167 / 480))[2];
 	}
 	else 
 		showTable(year);
