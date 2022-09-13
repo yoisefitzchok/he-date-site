@@ -80,6 +80,7 @@ if (n > 1000)
 	if (t[t.length - 1] == "'") t = 'תתר"' + t[t.length - 2]
 	}
 if (n == 1000) t = 'תת"ר'
+if (n == 0) t = "0"
 return t}
 
 namesOFdays = ["שבת","ראשון","שני","שלישי","רביעי","חמישי","שישי","שבת"]
@@ -150,11 +151,11 @@ return [
 namesOFdays[dayOFmolad]+", "+hourOFmolad+", "+partsOFhour,
 dayOFmolad+"-"+hourOFmolad+"-"+partsOFhour,
 gimatria(dayOFmolad)+" : "+hourOFmolad+" : "+partsOFhour,
-gimatria(dayOFmolad)+" "+gimatria(hourOFmolad)+" "+gimatria2(partsOFhour),
-(hourOFmolad < 12 ? "ליל" : "יום")+" "+gimatria(dayOFmolad)+" "+gimatria(hourOFmolad % 12)+" "+gimatria2(partsOFhour),
+gimatria(dayOFmolad)+" "+gimatria2(hourOFmolad)+" "+gimatria2(partsOFhour),
+(hourOFmolad < 12 ? "ליל" : "יום")+" "+gimatria(dayOFmolad)+" "+gimatria2(hourOFmolad % 12)+" "+gimatria2(partsOFhour),
 (sumOFparts % 181440 + 181440) % 181440,
 ((sumOFparts % 181440 / 25920 + 6) % 7 + 1).toFixed(9),
-(hourOFmolad < 12 ? "ליל" : "יום")+" "+namesOFdays[dayOFmolad]+", "+((hourOFmolad + 5) % 12 + 1) +", "+Math.floor(partsOFhour / 18)+", "+(partsOFhour % 18)
+(hourOFmolad < 12 ? "ליל" : "יום")+" "+namesOFdays[dayOFmolad]+", "+((hourOFmolad + 5) % 12 + 1)+", "+Math.floor(partsOFhour / 18)+", "+(partsOFhour % 18)
 ]}
 
 function showTable (year){ kviut(year)
