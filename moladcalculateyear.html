@@ -159,17 +159,18 @@ gimatria(dayOFmolad)+" "+gimatria2(hourOFmolad)+" "+gimatria2(partsOFhour),
 ]}
 
 function showTable (year){ kviut(year)
-var s = months_passed(year) , o = daysOFmonths.length , t = 0 , r = rox , d = dhiyot
+var s = months_passed(year) , o = daysOFmonths.length , t = 0 , r = rox , d = dhiyot , m = " " + year
 var output = "<table border=1><tr><th rowspan=2>חודש</th><th>מולד</th><th>ראש השנה</th><th colspan=2><button onclick=change_table(9)>ראש חודש</button></th><th rowspan=2><button onclick=change_table(10)>אורך</button></th><th colspan=2>תאריך לועזי א' בחודש</th></tr>"+
 "<tr><th><button id=show_molad onclick=change_table(8)>"+TDM[display_options[8] % 8]+"</button></th><th>דחיות</th><th>ל' שעבר</th><th>א' נוכחי</th><th>גרגוריאני</th><th>יוליאני</th></tr>"
 while (t <= o)
 	{
 	var l = loazi(r) , h = [(r % 7 + 5) % 7 + 1 , (r % 7 + 6) % 7 + 1]
 	h = [[namesOFdays[h[0]] , namesOFdays[h[1]]] , [gimatria(h[0])[0] , gimatria(h[1])[0]] , h]
-	if (t == o) d = rox_haxana(year+1)[1]
-	molad(s+t)
+	if (t > 0) m = ""
+	if (t == o) d = rox_haxana(year+1)[1] , m = " " + (year + 1)
+	molad(s + t)
 	line = [
-	namesOFmonths[t%o],
+	namesOFmonths[t % o] + m,
 	molad_options()[display_options[8] % 8],
 	(t % o < 1 ? (d.length > 0 ? d.join(" ו") : "אין") : ""),
 	(daysOFmonths[t-1] > 29 ? h[display_options[9] % 3][0] : ""),
@@ -179,7 +180,7 @@ while (t <= o)
 	"\u200E"+l[1].join("/")]
 	
 	output += "<tr><td>"+line.join("</td><td>")+"</td></tr>"
-	r += daysOFmonths[t++]
+	r += daysOFmonths[t ++]
 	}
 document.getElementById("myTable").innerHTML = "<H1>שנת "+((year > 0) ? gimatria(year) : "\u200E" + (year - 1))+"</H1><p>"+
 ((year > 0) ? year+" לבריאת העולם, &nbsp; " : "")+((year > 3449) ? (year-3449)+" לשטרות, &nbsp; " : "")+((year > 3829) ? (year-3829)+" לחורבן, &nbsp; " : "")+((year%7+6)%7+1)+" בשמיטה.<br>"+
