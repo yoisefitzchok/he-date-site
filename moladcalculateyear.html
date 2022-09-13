@@ -205,7 +205,7 @@ function changeHash(){
 	tmp=window.location.hash.substr(1);
 	year=parseInt(tmp);
 	if(year<=0 | isNaN(year)){
-		year=hebrew_date(Math.ceil(Date.now() / 86400000 + 2092591 + 167 / 480))[2];
+		year=regimatria(hebrew_date(Math.ceil(Date.now() / 86400000 + 2092591 + 167 / 480))[2]);
 	}
 	else 
 		showTable(year);
