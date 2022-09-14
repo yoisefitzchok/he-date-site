@@ -98,7 +98,7 @@ return t}
 namesOFdays = ["שבת","ראשון","שני","שלישי","רביעי","חמישי","שישי","שבת"]
 yamim = [1,0,1,1,0,1,0,1]
 display_options = [0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-TDM = ["יום, שעות, חלקים" , "חלקים-שעות-יום" , "יום : שעות : חלקים" , "יום שעות חלקים" , "ליל/יום שעות(12) חלקים" , "חלקים מתחילת ליל שבת" , "יום בשבר עשרוני" , "יום, שעות, דקות, חלקים"]
+TDM = ["יום : שעות : חלקים" , "חלקים : שעות : יום" , "יום : שעות : חלקים" , "יום שעות חלקים" , "ליל/יום שעות(12) חלקים" , "חלקים מתחילת ליל שבת" , "יום בשבר עשרוני" , "יום : שעות : דקות : חלקים"]
 
 function months_passed (year) {return Math.floor(((year - 1) * 235 + 1) / 19)}
 
@@ -161,7 +161,7 @@ return [gregorian_date , julian_date , difference , days + 1720995]}
 function molad_options (){
 return [
 namesOFdays[dayOFmolad]+" : "+hourOFmolad+" : "+partsOFhour,
-dayOFmolad+" : "+hourOFmolad+" : "+partsOFhour,
+partsOFhour+" : "+hourOFmolad+" : "+dayOFmolad,
 gimatria(dayOFmolad)+" : "+hourOFmolad+" : "+partsOFhour,
 gimatria(dayOFmolad)+" "+gimatria2(hourOFmolad)+" "+gimatria2(partsOFhour),
 (hourOFmolad < 12 ? "ליל" : "יום")+" "+gimatria(dayOFmolad)+" "+gimatria2(hourOFmolad % 12)+" "+gimatria2(partsOFhour),
