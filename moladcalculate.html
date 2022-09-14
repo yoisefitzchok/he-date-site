@@ -160,14 +160,14 @@ return [gregorian_date , julian_date , difference , days + 1720995]}
 
 function molad_options (){
 return [
-namesOFdays[dayOFmolad]+", "+hourOFmolad+", "+partsOFhour,
-dayOFmolad+"-"+hourOFmolad+"-"+partsOFhour,
+namesOFdays[dayOFmolad]+" : "+hourOFmolad+" : "+partsOFhour,
+dayOFmolad+" : "+hourOFmolad+" : "+partsOFhour,
 gimatria(dayOFmolad)+" : "+hourOFmolad+" : "+partsOFhour,
 gimatria(dayOFmolad)+" "+gimatria2(hourOFmolad)+" "+gimatria2(partsOFhour),
 (hourOFmolad < 12 ? "ליל" : "יום")+" "+gimatria(dayOFmolad)+" "+gimatria2(hourOFmolad % 12)+" "+gimatria2(partsOFhour),
 (sumOFparts % 181440 + 181440) % 181440,
 ((sumOFparts % 181440 / 25920 + 6) % 7 + 1).toFixed(9),
-(hourOFmolad < 12 ? "ליל" : "יום")+" "+namesOFdays[dayOFmolad]+", "+((hourOFmolad + 5) % 12 + 1)+", "+Math.floor(partsOFhour / 18)+", "+(partsOFhour % 18)
+(hourOFmolad < 12 ? "ליל" : "יום")+" "+namesOFdays[dayOFmolad]+" : "+((hourOFmolad + 5) % 12 + 1)+" : "+Math.floor(partsOFhour / 18)+" : "+(partsOFhour % 18)
 ]}
 
 function getLine (year){
