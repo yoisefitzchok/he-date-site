@@ -1,57 +1,230 @@
-<html dir="rtl">
-<head>
-<title>לוח שנה עברי</title>
-<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
-<script type="text/javascript" src="js/jquery.js"></script>
-<script type="text/javascript" src="js/heDate.min.js"></script>
-<script type="text/javascript" src="js/DateConvert.js"></script>
-<script type="text/javascript">var thisPageId="dateConvert";</script>
-<script type="text/javascript" src="js/script.js"></script>
-<link href="style/style.css" rel="stylesheet" type="text/css"/> 
-<link href="style/DateConvert.css" rel="stylesheet" type="text/css"/>
-</head>
+<!DOCTYPE html><html dir="rtl" lang="he">
+<head><meta charset="utf-8"><title>המרת תאריכים</title></head>
+<body><div align="center">
+תאריך עברי
+<br>
+ שנה: <input type="number" step="1" id="xana">
+ חודש: <select name="hodex" id="hodex">
+<option>תשרי</option>
+<option>מרחשון</option>
+<option>כסלו</option>
+<option>טבת</option>
+<option>שבט</option>
+<option>אדר א'</option>
+<option>אדר ב'</option>
+<option>אדר</option>
+<option>ניסן</option>
+<option>אייר</option>
+<option>סיון</option>
+<option>תמוז</option>
+<option>אב</option>
+<option>אלול</option>
+</select>
+ יום: <select name="yom" id="yom">
+<option>א'</option>
+<option>ב'</option>
+<option>ג'</option>
+<option>ד'</option>
+<option>ה'</option>
+<option>ו'</option>
+<option>ז'</option>
+<option>ח'</option>
+<option>ט'</option>
+<option>י'</option>
+<option>י"א</option>
+<option>י"ב</option>
+<option>י"ג</option>
+<option>י"ד</option>
+<option>ט"ו</option>
+<option>ט"ז</option>
+<option>י"ז</option>
+<option>י"ח</option>
+<option>י"ט</option>
+<option>כ'</option>
+<option>כ"א</option>
+<option>כ"ב</option>
+<option>כ"ג</option>
+<option>כ"ד</option>
+<option>כ"ה</option>
+<option>כ"ו</option>
+<option>כ"ז</option>
+<option>כ"ח</option>
+<option>כ"ט</option>
+<option>ל'</option>
+</select>
+<span id="jewish_week"></span>
+<br>
+<label for="jewish_night">לפני שעה 24</label> <input type="checkbox" id="jewish_night">
+<button onclick="fromH(1)">המרה לגרגוריאני</button>
+<button onclick="fromH(0)">המרה ליוליאני</button>
+<br>
+<br>
+תאריך לועזי
+<br>
+ שנה: <input type="number" step="1" id="year">
+ חודש: <select name="month" id="month">
+<option>ינואר</option>
+<option>פברואר</option>
+<option>מרץ</option>
+<option>אפריל</option>
+<option>מאי</option>
+<option>יוני</option>
+<option>יולי</option>
+<option>אוגוסט</option>
+<option>ספטמבר</option>
+<option>אוקטובר</option>
+<option>נובמבר</option>
+<option>דצמבר</option>
+</select>
+ יום: <select name="day" id="day">
+<option>1</option>
+<option>2</option>
+<option>3</option>
+<option>4</option>
+<option>5</option>
+<option>6</option>
+<option>7</option>
+<option>8</option>
+<option>9</option>
+<option>10</option>
+<option>11</option>
+<option>12</option>
+<option>13</option>
+<option>14</option>
+<option>15</option>
+<option>16</option>
+<option>17</option>
+<option>18</option>
+<option>19</option>
+<option>20</option>
+<option>21</option>
+<option>22</option>
+<option>23</option>
+<option>24</option>
+<option>25</option>
+<option>26</option>
+<option>27</option>
+<option>28</option>
+<option>29</option>
+<option>30</option>
+<option>31</option>
+</select>
+<span id="roman_week"></span>
+<br>
+<label for="roman_night">אחרי תחילת הלילה</label> <input type="checkbox" id="roman_night">
+<button onclick="toH(1)">המרה מגרגוריאני</button>
+<button onclick="toH(0)">המרה מיוליאני</button>
+<script>
+daysINmonth = ["א'","ב'","ג'","ד'","ה'","ו'","ז'","ח'","ט'","י'",'י"א','י"ב','י"ג','י"ד','ט"ו','ט"ז','י"ז','י"ח','י"ט',"כ'",'כ"א','כ"ב','כ"ג','כ"ד','כ"ה','כ"ו','כ"ז','כ"ח','כ"ט',"ל'"]
+namesOFdays = ["שבת","ראשון","שני","שלישי","רביעי","חמישי","שישי","שבת"]
+yamim = [1,0,1,1,0,1,0,1]
+months_names = ["ינואר","פברואר","מרץ","אפריל","מאי","יוני","יולי","אוגוסט","ספטמבר","אוקטובר","נובמבר","דצמבר"]
 
-<body>
-    <div id="topbar">
-		<div class="menu"></div>
-		<div class="today"></div>
-	</div>
-	<h1>ממיר תאריכים</h1>
-	<h3>מתאריך לועזי לעברי וההפך</h3>
-    <br/>
-           <script type="text/javascript"><!--
-            google_ad_client = "pub-2431148680519977";
-            /* Calendar up */
-            google_ad_slot = "0260338102";
-            google_ad_width = 468;
-            google_ad_height = 60;
-            //-->
-            </script>
-            <script type="text/javascript"
-            src="https://pagead2.googlesyndication.com/pagead/show_ads.js">
-            </script>
-	<br/><br/>
+function gimatria (number) {return daysINmonth[number - 1]}
+function months_passed (year) {return Math.floor(((year - 1) * 235 + 1) / 19)}
 
+function molad (hodex){
+sumOFparts = hodex * 765433 + 57444
+sumOFdays = Math.floor(sumOFparts / 25920)
+dayOFmolad = (sumOFdays % 7 + 6) % 7 + 1
+partsOFday = (sumOFparts % 25920 + 25920) % 25920
+hourOFmolad = Math.floor(partsOFday / 1080)
+partsOFhour = partsOFday % 1080}
 
-	<h5>תאריך עברי</h5>
-	שנה: <input type="text" id="SelectYear" onchange="yearChange()"/> חודש: <select id="SelectMonth" onchange="monthChange();"></select>  יום: <select id="SelectDate" onchange="dateChange();"></select> <span class="showDay"></span>
-	<h5>תאריך לועזי</h5>
-	שנה: <input type="text" id="SelectOYear" onchange="oyearChange()"/> חודש: <select id="SelectOMonth" onchange="omonthChange();"></select>  יום: <select id="SelectODate" onchange="odateChange();"></select> <span class="showDay"></span>
-	<br/><br/>
- 
+function kviah (year){
+molad(months_passed(year))
+var rox = sumOFdays , dhiyot = []
+if (yamim[(rox%7+7)%7] > 0 && partsOFday >= 19440) rox ++ , dhiyot.push("מולד זקן")
+if (yamim[(rox%7+7)%7] < 1) rox ++ , dhiyot.push("אד\"ו")
+return [rox , dhiyot]}
 
+function rox_haxana (year){
+var last = kviah(year-1)[0] , next = kviah(year+1)[0] , current = kviah(year) , rox = current[0] , dhiyot = current[1]
+if (rox - last == 382) rox ++ , dhiyot.push("בט\"ו תקפ\"ט")
+if (next - rox == 356) rox ++ , dhiyot.push("ג\"ט ר\"ד")
+if (yamim[(rox%7+7)%7]<1) rox ++
+return [rox , dhiyot]}
 
-<br/><br/>
-נבנה ע"י דניאל ארז. להערות והארות נא לשלוח דוא"ל erezdaniel7@gmail.com
-<br/>
-גירסת הרצה.
+function kviut (year){
+xana_habaa = rox_haxana(year+1)[0] , xana_zo = rox_haxana(year) , rox = xana_zo[0] , dhiyot = xana_zo[1] , lengthOFyear = xana_habaa - rox
+daysOFmonths = [30,29,30,29,30,29,30,29,30,29,30,29]
+namesOFmonths = ["תשרי","מרחשון","כסלו","טבת","שבט","אדר","ניסן","אייר","סיון","תמוז","אב","אלול"]
+if (lengthOFyear > 365) daysOFmonths.splice(5,0,30) , namesOFmonths.splice(5,1,"אדר א'","אדר ב'")
+daysOFmonths[1] += (lengthOFyear%10 == 5) , daysOFmonths[2] -= (lengthOFyear%10 == 3)
+year_order = ["חסרים","כסדרם","שלמים"]
+year_order = year_order[lengthOFyear%10-3]}
 
-</body>
+function hebrew_date (days){
+year_number = Math.ceil((days - 49)  * 98496 / 35975351)
+if (rox_haxana(year_number + 1)[0] <= days) year_number ++
+kviut(year_number)
+dayOFmonth = days - xana_zo[0] , monthOFyear = 0
+while (dayOFmonth >= 0) dayOFmonth -= daysOFmonths[monthOFyear ++]
+dayOFmonth += daysOFmonths[-- monthOFyear] + 1
+return [namesOFdays[(days % 7 + 7) % 7] , gimatria(dayOFmonth) , namesOFmonths[monthOFyear] , year_number]}
 
+function TOcommon (days){
+var year = Math.floor((days - 122.1) / 365.25)
+var sum = Math.floor(year * 365.25)
+var month = Math.floor((days - sum) / 30.61)
+var day = days - sum - Math.floor(month * 30.61)
+month -= (month > 13) * 12 + 1
+year += (month < 3)
+return [day , months_names[month - 1] , year]}
 
+function loazi (days){ days -= 1372999
+var difference = Math.ceil(Math.floor((days - 146221.25) / 36524.25) * 3 / 4) + 1
+var julian_date = TOcommon(days)
+var gregorian_date = TOcommon(days + difference)
+julian_date[2] -= (julian_date[2] < 1)
+return [gregorian_date , julian_date , difference , days + 1720995 , namesOFdays[(days % 7 + 12) % 7]]}
 
+function days_hebrew (year,month,day){ kviut(year)
+var hodex = namesOFmonths.indexOf(month)
+if (hodex < 0) hodex = namesOFmonths.length - 7
+while (hodex > 0) day += daysOFmonths[-- hodex]
+return rox + day}
 
+function days_common (year,month,day,calendar){
+if (calendar == 0 && year < 0) year ++
+if (month < 3) month += 12 , year --
+var days = Math.floor(year * 365.25) + Math.floor((month + 1) * 30.6) + day
+var difference = Math.ceil(Math.floor((days - 146221.25) / 36525) * 3 / 4) + 1
+return days + 1372999 - difference * (calendar != 0)}
 
+function fields (sometime,calendar){
+if (sometime == null) sometime = Date.now() / 86400000 + 2092591
+var jewish_date = hebrew_date(Math.ceil(sometime + 167 / 480))
+var common_date = loazi(Math.ceil(sometime))
+var checkink = (common_date[4] != jewish_date[0])
+document.getElementById("xana").value = jewish_date[3]
+document.getElementById("hodex").value = jewish_date[2]
+document.getElementById("yom").value = jewish_date[1]
+document.getElementById("jewish_week").innerHTML = jewish_date[0]
+document.getElementById("year").value = common_date[0 + (calendar == 0)][2]
+document.getElementById("month").value = common_date[0 + (calendar == 0)][1]
+document.getElementById("day").value = common_date[0 + (calendar == 0)][0]
+document.getElementById("roman_week").innerHTML = common_date[4]
+document.getElementById("jewish_night").checked = checkink
+document.getElementById("roman_night").checked = checkink
+}
 
+function toH (option){
+fields(days_common(
+document.getElementById("year").value * 1,
+months_names.indexOf(document.getElementById("month").value) + 1,
+document.getElementById("day").value * 1,
+option) -
+(document.getElementById("roman_night").checked < 1) / 2,
+option)}
 
-</html>
+function fromH (option){
+fields(days_hebrew(
+document.getElementById("xana").value * 1,
+document.getElementById("hodex").value,
+daysINmonth.indexOf(document.getElementById("yom").value)) +
+(document.getElementById("jewish_night").checked < 1) / 2 - 1,
+option)}
+
+fields()
+</script></div></body></html>
