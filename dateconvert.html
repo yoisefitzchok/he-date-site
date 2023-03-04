@@ -195,7 +195,7 @@ return days + 1372999 - difference * (calendar != 0)}
 function fields (sometime,calendar){
 if (sometime == null) sometime = Date.now() / 86400000 + 2092591
 var jewish_date = hebrew_date(Math.ceil(sometime + 167 / 480))
-var common_date = loazi(Math.ceil(sometime))
+var common_date = loazi(Math.ceil(sometime + 1 / 12))
 var checkink = (common_date[4] != jewish_date[0])
 document.getElementById("xana").value = jewish_date[3]
 document.getElementById("hodex").value = jewish_date[2]
