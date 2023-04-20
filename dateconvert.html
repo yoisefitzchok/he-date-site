@@ -215,7 +215,7 @@ document.getElementById("year").value * 1,
 months_names.indexOf(document.getElementById("month").value) + 1,
 document.getElementById("day").value * 1,
 option) +
-(document.getElementById("roman_night").checked < 1) / 2,
+(document.getElementById("roman_night").checked < 1) * 0.8,
 option)}
 
 function fromH (option){
@@ -223,7 +223,7 @@ fields(days_hebrew(
 document.getElementById("xana").value * 1,
 document.getElementById("hodex").value,
 daysINmonth.indexOf(document.getElementById("yom").value)) -
-(document.getElementById("jewish_night").checked < 1) / 2 - 1,
+(document.getElementById("jewish_night").checked < 1) * 0.2 - 1,
 option)}
 
 fields()
