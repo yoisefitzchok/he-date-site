@@ -1,5 +1,5 @@
 <html dir="rtl" lang="he">
-<head><meta charset="utf-8"><title>המרת תאריכים</title></head>
+<head><meta charset="utf-8"><style></style><title>המרת תאריכים</title></head>
 <body><div align="center">
 תאריך עברי
 <br>
@@ -54,7 +54,7 @@
 </select>
 <span id="jewish_week"></span>
 <br>
-<label for="jewish_night">לפני שעה 24</label> <input type="checkbox" id="jewish_night">
+<label for="jewish_night"><span>לפני שעה 24</span></label> <input type="checkbox" id="jewish_night">
 <button onclick="fromH(1)">המרה לגרגוריאני</button>
 <button onclick="fromH(0)">המרה ליוליאני</button>
 <br>
@@ -111,7 +111,7 @@
 </select>
 <span id="roman_week"></span>
 <br>
-<label for="roman_night">אחרי תחילת הלילה</label> <input type="checkbox" id="roman_night">
+<label for="roman_night"><span>אחרי תחילת הלילה</span></label> <input type="checkbox" id="roman_night">
 <button onclick="toH(1)">המרה מגרגוריאני</button>
 <button onclick="toH(0)">המרה מיוליאני</button>
 <script>
@@ -207,6 +207,7 @@ document.getElementById("day").value = common_date[0 + (calendar == 0)][0]
 document.getElementById("roman_week").innerHTML = common_date[4]
 document.getElementById("jewish_night").checked = checkink
 document.getElementById("roman_night").checked = checkink
+document.getElementsByTagName("style")[0].innerHTML = "span{color:" + (checkink ? "#f00" : "#000") + ";font-weight:" + (checkink ? 900 : 400) + "}"
 }
 
 function toH (option){
