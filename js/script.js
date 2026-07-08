@@ -1,8 +1,8 @@
 ﻿$(document).ready(function(){
 	$.ajax({
 		type: "GET",
-		url: "js/menu.xml",
-		//url: "js/menu_full_url.xml",
+		//url: "js/menu.xml",
+		url: "js/menu_full_url.xml",
 		dataType: "xml",
 		success: function(xml) {
 			$(xml).find('link').each(function(){
