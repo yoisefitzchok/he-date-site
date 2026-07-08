@@ -2,11 +2,11 @@
 <menu>
 	<link id="dateConvert">
 		<title>ממיר תאריכים</title> 
-		<url>http://he-date.info/dateconvert.html</url>
+		<url>https://yoisefitzchok.github.io/he-date-site/dateconvert.html</url>
 	</link>
 	<link id="moladCalculate">
 		<title>מחשבון מולדות</title> 
-		<url>http://he-date.info/moladcalculate.html</url>
+		<url>https://yoisefitzchok.github.io/he-date-site/moladcalculate.html</url>
 	</link>
 	<link id="tekufaCalculate">
 		<title>מחשבון תקופות</title> 
@@ -14,6 +14,6 @@
 	</link>
 	<link id="contactMe">
 		<title>צור קשר</title> 
-		<url>http://he-date.info/contactme.html</url>
+		<url>http://yoisefitzchok.github.io/he-date.info/contactme.html</url>
 	</link>
 </menu>
